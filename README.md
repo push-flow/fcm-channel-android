@@ -17,11 +17,13 @@ allprojects {
 }
 ```
 
-Step 2: Add the dependency
+Step 2: Add the dependency and GMS plugin to your app build.gradle
 ```
   dependencies {
     compile 'com.github.push-flow.fcm-channel-android:fcm-channel:LATEST-VERSION'
   }
+
+  apply plugin: 'com.google.gms.google-services'
 ```
 Latest Version: [![](https://jitpack.io/v/push-flow/fcm-channel-android.svg?style=flat-square)](https://jitpack.io/#push-flow/fcm-channel-android)
 
