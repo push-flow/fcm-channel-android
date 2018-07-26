@@ -23,11 +23,11 @@ import io.fcmchannel.sdk.core.models.TypeValidation;
 public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder> {
 
     private List<FlowRule> rules;
-    private OnTagClickListener onTagClickListener;
+    private OnQuickReplyClickListener onQuickReplyClickListener;
 
-    public TagsAdapter(List<FlowRule> rules, OnTagClickListener onTagClickListener) {
+    public TagsAdapter(List<FlowRule> rules, OnQuickReplyClickListener onQuickReplyClickListener) {
         addRules(rules);
-        this.onTagClickListener = onTagClickListener;
+        this.onQuickReplyClickListener = onQuickReplyClickListener;
     }
 
     private void addRules(List<FlowRule> rules) {
@@ -78,7 +78,7 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.ViewHolder> {
         private View.OnClickListener onTagClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TagsAdapter.this.onTagClickListener.onTagClick(getResponseFromRule());
+                TagsAdapter.this.onQuickReplyClickListener.onClick(getResponseFromRule());
             }
         };
 
