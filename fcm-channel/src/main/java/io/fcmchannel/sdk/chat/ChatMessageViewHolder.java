@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.DrawableRes;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.util.Linkify;
 import android.util.TypedValue;
@@ -18,7 +19,10 @@ import android.widget.TextView;
 import java.text.DateFormat;
 
 import io.fcmchannel.sdk.R;
+import io.fcmchannel.sdk.chat.metadata.OnQuickReplyClickListener;
+import io.fcmchannel.sdk.chat.metadata.QuickReplyAdapter;
 import io.fcmchannel.sdk.core.models.Message;
+import io.fcmchannel.sdk.util.SpaceItemDecoration;
 
 /**
  * Created by john-mac on 4/11/16.
@@ -32,8 +36,13 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
     private TextView message;
     private TextView date;
     private ImageView icon;
+    private RecyclerView quickReplies;
 
     private OnChatMessageSelectedListener onChatMessageSelectedListener;
+    private OnQuickReplyClickListener onQuickReplyClickListener;
+
+    private boolean hasQuickReplies;
+    private boolean isRecent;
 
     private final DateFormat hourFormatter;
     private final Context context;
@@ -55,6 +64,14 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         this.icon = (ImageView) itemView.findViewById(R.id.icon);
         this.icon.setImageResource(iconRes);
 
+        this.quickReplies = (RecyclerView) itemView.findViewById(R.id.quickReplies);
+
+        SpaceItemDecoration quickReplyItemDecoration = new SpaceItemDecoration();
+        quickReplyItemDecoration.setHorizontalSpaceWidth(parent.getPaddingBottom());
+
+        this.quickReplies.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        this.quickReplies.addItemDecoration(quickReplyItemDecoration);
+
         this.itemView.setOnLongClickListener(onLongClickListener);
 
         this.leftMarginIncoming = getDpDimen(10);
@@ -65,6 +82,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
     void bindView(Message chatMessage) {
         this.chatMessage = chatMessage;
+        hasQuickReplies = chatMessage.getMetadata() != null && chatMessage.getMetadata().getQuickReplies().size() > 0;
         message.setText(chatMessage.getText());
         Linkify.addLinks(message, Linkify.ALL);
         date.setText(hourFormatter.format(chatMessage.getCreatedOn()));
@@ -75,7 +93,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
     private void bindContainer(Message chatMessage) {
         boolean incoming = isIncoming(chatMessage);
         icon.setVisibility(incoming ? View.GONE : View.VISIBLE);
-
+        setupQuickReplies(chatMessage);
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) parent.getLayoutParams();
         setupBubblePosition(incoming, params);
         parent.setLayoutParams(params);
@@ -107,15 +125,29 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
                 , context.getResources().getDisplayMetrics());
     }
 
+    private void setupQuickReplies(Message chatMessage) {
+        if (hasQuickReplies && isRecent) {
+            QuickReplyAdapter quickReplyAdapter = new QuickReplyAdapter(chatMessage.getMetadata().getQuickReplies(), onQuickReplyClickListener);
+            quickReplies.setAdapter(quickReplyAdapter);
+            quickReplies.setVisibility(View.VISIBLE);
+        } else {
+            quickReplies.setVisibility(View.GONE);
+        }
+    }
+
     private View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View view) {
-            if(onChatMessageSelectedListener != null) {
+            if (onChatMessageSelectedListener != null) {
                 onChatMessageSelectedListener.onChatMessageSelected(chatMessage);
             }
             return false;
         }
     };
+
+    void setIsRecent(boolean isRecent) {
+        this.isRecent = isRecent;
+    }
 
     void setOnChatMessageSelectedListener(OnChatMessageSelectedListener onChatMessageSelectedListener) {
         this.onChatMessageSelectedListener = onChatMessageSelectedListener;
@@ -123,5 +155,9 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
     interface OnChatMessageSelectedListener {
         void onChatMessageSelected(Message chatMessage);
+    }
+
+    void setOnQuickReplyClickListener(OnQuickReplyClickListener onQuickReplyClickListener) {
+        this.onQuickReplyClickListener = onQuickReplyClickListener;
     }
 }
