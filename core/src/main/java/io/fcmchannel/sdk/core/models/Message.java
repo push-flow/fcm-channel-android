@@ -4,6 +4,8 @@ import android.support.annotation.StringDef;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.json.JSONObject;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
@@ -46,13 +48,13 @@ public class Message {
 
     private List<Label> labels;
 
+    private MessageMetadata metadata;
+
     @SerializedName("created_on")
     private Date createdOn;
 
     @SerializedName("sent_on")
     private Date sentOn;
-
-    private FlowRuleset ruleset;
 
     public Integer getId() {
         return id;
@@ -154,6 +156,15 @@ public class Message {
         return this;
     }
 
+    public MessageMetadata getMetadata() {
+        return metadata;
+    }
+
+    public Message setMetadata(MessageMetadata metadata) {
+        this.metadata = metadata;
+        return this;
+    }
+
     public Date getCreatedOn() {
         return createdOn;
     }
@@ -169,15 +180,6 @@ public class Message {
 
     public Message setSentOn(Date sentOn) {
         this.sentOn = sentOn;
-        return this;
-    }
-
-    public FlowRuleset getRuleset() {
-        return ruleset;
-    }
-
-    public Message setRuleset(FlowRuleset ruleset) {
-        this.ruleset = ruleset;
         return this;
     }
 

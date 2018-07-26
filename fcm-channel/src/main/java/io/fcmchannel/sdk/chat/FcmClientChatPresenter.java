@@ -8,15 +8,7 @@ import java.util.List;
 
 import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.R;
-import io.fcmchannel.sdk.core.managers.FlowRunnerManager;
-import io.fcmchannel.sdk.core.models.Flow;
-import io.fcmchannel.sdk.core.models.FlowDefinition;
-import io.fcmchannel.sdk.core.models.FlowRuleset;
-import io.fcmchannel.sdk.core.models.FlowRun;
-import io.fcmchannel.sdk.core.models.FlowStep;
 import io.fcmchannel.sdk.core.models.Message;
-import io.fcmchannel.sdk.core.models.Type;
-import io.fcmchannel.sdk.core.models.TypeValidation;
 import io.fcmchannel.sdk.core.models.network.ApiResponse;
 import io.fcmchannel.sdk.core.models.v2.Contact;
 import io.fcmchannel.sdk.core.network.RestServices;
@@ -46,73 +38,6 @@ class FcmClientChatPresenter {
             } else {
                 loadContact();
             }
-        }
-    }
-
-    void loadCurrentRulesets() {
-        Message message = view.getLastMessage();
-        if (message != null) {
-            services.loadRuns(FcmClient.getContact().getUuid()).enqueue(new Callback<ApiResponse<FlowRun>>() {
-                @Override
-                public void onResponse(Call<ApiResponse<FlowRun>> call, Response<ApiResponse<FlowRun>> response) {
-                    if (hasLoadedSuccessfullyFlowRun(response)) {
-                        FlowRun flowRun = response.body().getResults().get(0);
-                        getLastRulesetFromFlowRun(flowRun);
-                    }
-                }
-
-                private boolean hasLoadedSuccessfullyFlowRun(Response<ApiResponse<FlowRun>> response) {
-                    return response.isSuccessful() && response.body().getResults() != null && response.body().getResults().size() > 0;
-                }
-
-                @Override
-                public void onFailure(Call<ApiResponse<FlowRun>> call, Throwable t) { /* Do nothing */}
-            });
-        }
-    }
-
-    private void getLastRulesetFromFlowRun(FlowRun flowRun) {
-        List<FlowStep> flowSteps = flowRun.getPath();
-
-        if (isValidFlowRun(flowRun, flowSteps)) {
-            final FlowStep latestFlowStep = flowSteps.get(flowSteps.size() - 1);
-            loadFlow(flowRun, latestFlowStep);
-        }
-    }
-
-    private boolean isValidFlowRun(FlowRun flowRun, List<FlowStep> flowSteps) {
-        return FlowRunnerManager.isFlowActive(flowRun) && flowSteps != null && flowSteps.size() > 0;
-    }
-
-    private void loadFlow(FlowRun flowRun, final FlowStep flowStep) {
-        services.loadFlowDefinition(flowRun.getFlow().getUuid()).enqueue(new Callback<FlowDefinition>() {
-            @Override
-            public void onResponse(Call<FlowDefinition> call, Response<FlowDefinition> response) {
-                if (hasLoadedSuccessfullyFlows(response)) {
-                    FlowDefinition definition = response.body();
-                    Flow flow = definition.getFlows().get(0);
-
-                    getRulesetFromFlow(flowStep, flow);
-                }
-            }
-
-            private boolean hasLoadedSuccessfullyFlows(Response<FlowDefinition> response) {
-                return response.isSuccessful() && response.body() != null
-                    && response.body().getFlows() != null && response.body().getFlows().size() > 0;
-            }
-
-            @Override
-            public void onFailure(Call<FlowDefinition> call, Throwable t) { /* Do nothing */ }
-
-        });
-    }
-
-    private void getRulesetFromFlow(FlowStep flowStep, Flow flow) {
-        int indexOfRuleset = flow.getRuleSets().indexOf(new FlowRuleset(flowStep.getNode()));
-
-        if (indexOfRuleset >= 0) {
-            FlowRuleset ruleset = flow.getRuleSets().get(indexOfRuleset);
-            view.setCurrentRulesets(ruleset);
         }
     }
 
@@ -154,6 +79,7 @@ class FcmClientChatPresenter {
 
             @Override
             public void onFailure(Call<ApiResponse<Message>> call, Throwable throwable) {
+                throwable.printStackTrace();
                 onRequestFailed();
             }
         });
@@ -185,10 +111,6 @@ class FcmClientChatPresenter {
         } else {
             chatMessage.setId(0);
         }
-    }
-
-    Type getFirstType(FlowRuleset ruleset) {
-        return TypeValidation.getTypeValidationForRule(ruleset.getRules().get(0)).getType();
     }
 
     public void sendMessage(String messageText) {
