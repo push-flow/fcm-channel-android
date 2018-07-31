@@ -2,8 +2,11 @@ package io.fcmchannel.sdk.util;
 
 import android.os.Bundle;
 
+import com.google.gson.Gson;
+
 import java.util.Map;
 
+import io.fcmchannel.sdk.core.adapters.MetadataTypeAdapter;
 import io.fcmchannel.sdk.core.models.Message;
 import io.fcmchannel.sdk.core.models.MessageMetadata;
 
@@ -25,7 +28,13 @@ public class BundleHelper {
     }
 
     public static MessageMetadata getMessageMetadata(Bundle data) {
-        return data.getParcelable(EXTRA_METADATA);
+        String json = data.getString(EXTRA_METADATA);
+        MessageMetadata messageMetadata = null;
+        if(json != null && !json.equals("")) {
+            Gson gson = new Gson();
+            messageMetadata = gson.fromJson(json, MessageMetadata.class);
+        }
+        return messageMetadata;
     }
 
     public static Message getMessage(Bundle data) {
@@ -33,7 +42,9 @@ public class BundleHelper {
         message.setId(getMessageId(data));
         message.setText(getMessageText(data));
         message.setDirection(Message.DIRECTION_OUTGOING);
-        message.setMetadata(getMessageMetadata(data));
+        MessageMetadata metadata = getMessageMetadata(data);
+        if(metadata != null)
+            message.setMetadata(metadata);
         return message;
     }
 
