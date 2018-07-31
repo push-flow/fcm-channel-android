@@ -24,8 +24,6 @@ interface FcmClientChatView {
 
     void showMessage(String message);
 
-    void setCurrentRulesets(FlowRuleset rulesets);
-
     Message getLastMessage();
 
 }
