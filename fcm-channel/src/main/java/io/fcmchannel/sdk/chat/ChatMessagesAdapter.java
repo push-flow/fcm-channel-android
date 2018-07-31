@@ -88,8 +88,8 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         } else {
             chatMessages.add(0, message);
             notifyItemInserted( 0);
-            notifyDataSetChanged();
         }
+        notifyDataSetChanged();
     }
 
     public void removeChatMessage(Message message) {
