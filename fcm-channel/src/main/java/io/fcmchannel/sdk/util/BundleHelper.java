@@ -6,7 +6,6 @@ import com.google.gson.Gson;
 
 import java.util.Map;
 
-import io.fcmchannel.sdk.core.adapters.MetadataTypeAdapter;
 import io.fcmchannel.sdk.core.models.Message;
 import io.fcmchannel.sdk.core.models.MessageMetadata;
 
