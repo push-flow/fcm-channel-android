@@ -29,7 +29,7 @@ public class BundleHelper {
     public static MessageMetadata getMessageMetadata(Bundle data) {
         String json = data.getString(EXTRA_METADATA);
         MessageMetadata messageMetadata = null;
-        if(json != null && !json.equals("")) {
+        if (json != null && !json.equals("")) {
             Gson gson = new Gson();
             messageMetadata = gson.fromJson(json, MessageMetadata.class);
         }
@@ -41,9 +41,7 @@ public class BundleHelper {
         message.setId(getMessageId(data));
         message.setText(getMessageText(data));
         message.setDirection(Message.DIRECTION_OUTGOING);
-        MessageMetadata metadata = getMessageMetadata(data);
-        if(metadata != null)
-            message.setMetadata(metadata);
+        message.setMetadata(getMessageMetadata(data));
         return message;
     }
 
