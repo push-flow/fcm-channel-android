@@ -41,7 +41,6 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
     private OnChatMessageSelectedListener onChatMessageSelectedListener;
     private OnQuickReplyClickListener onQuickReplyClickListener;
 
-    private boolean hasQuickReplies;
     private boolean isRecent;
 
     private final DateFormat hourFormatter;
@@ -82,7 +81,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
     void bindView(Message chatMessage) {
         this.chatMessage = chatMessage;
-        hasQuickReplies = chatMessage.getMetadata() != null && chatMessage.getMetadata().getQuickReplies().size() > 0;
+
         message.setText(chatMessage.getText());
         Linkify.addLinks(message, Linkify.ALL);
         date.setText(hourFormatter.format(chatMessage.getCreatedOn()));
@@ -126,6 +125,10 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setupQuickReplies(Message chatMessage) {
+        boolean hasQuickReplies = chatMessage.getMetadata() != null &&
+                chatMessage.getMetadata().getQuickReplies() != null  &&
+                chatMessage.getMetadata().getQuickReplies().size() > 0;
+
         if (hasQuickReplies && isRecent) {
             QuickReplyAdapter quickReplyAdapter = new QuickReplyAdapter(chatMessage.getMetadata().getQuickReplies(), onQuickReplyClickListener);
             quickReplies.setAdapter(quickReplyAdapter);
