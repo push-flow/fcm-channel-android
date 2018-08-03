@@ -9,17 +9,16 @@ import android.widget.TextView;
 import java.util.List;
 
 import io.fcmchannel.sdk.R;
-import io.fcmchannel.sdk.core.models.QuickReply;
 
 /**
  * Created by john-mac on 6/30/16.
  */
 public class QuickReplyAdapter extends RecyclerView.Adapter<QuickReplyAdapter.ViewHolder> {
 
-    private List<QuickReply> quickReplies;
+    private List<String> quickReplies;
     private OnQuickReplyClickListener onQuickReplyClickListener;
 
-    public QuickReplyAdapter(List<QuickReply> quickReplies, OnQuickReplyClickListener onQuickReplyClickListener) {
+    public QuickReplyAdapter(List<String> quickReplies, OnQuickReplyClickListener onQuickReplyClickListener) {
         this.quickReplies = quickReplies;
         this.onQuickReplyClickListener = onQuickReplyClickListener;
     }
@@ -42,7 +41,7 @@ public class QuickReplyAdapter extends RecyclerView.Adapter<QuickReplyAdapter.Vi
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView text;
-        private QuickReply quickReply;
+        private String quickReply;
 
         ViewHolder(final ViewGroup parent) {
             super(LayoutInflater.from(parent.getContext()).inflate(R.layout.fcm_client_item_quick_reply, null));
@@ -50,15 +49,15 @@ public class QuickReplyAdapter extends RecyclerView.Adapter<QuickReplyAdapter.Vi
             text.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    onQuickReplyClickListener.onClick(quickReply.getTitle());
+                    onQuickReplyClickListener.onClick(quickReply);
                     parent.setVisibility(View.GONE);
                 }
             });
         }
 
-        void bind(QuickReply quickReply) {
+        void bind(String quickReply) {
             this.quickReply = quickReply;
-            text.setText(quickReply.getTitle());
+            text.setText(quickReply);
         }
 
     }

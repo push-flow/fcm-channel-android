@@ -10,14 +10,12 @@ import java.util.concurrent.TimeUnit;
 
 import io.fcmchannel.sdk.core.adapters.GsonDateTypeAdapter;
 import io.fcmchannel.sdk.core.adapters.HashMapTypeAdapter;
-import io.fcmchannel.sdk.core.adapters.MetadataTypeAdapter;
 import io.fcmchannel.sdk.core.models.Boundary;
 import io.fcmchannel.sdk.core.models.Field;
 import io.fcmchannel.sdk.core.models.FlowDefinition;
 import io.fcmchannel.sdk.core.models.FlowRun;
 import io.fcmchannel.sdk.core.models.Group;
 import io.fcmchannel.sdk.core.models.Message;
-import io.fcmchannel.sdk.core.models.MessageMetadata;
 import io.fcmchannel.sdk.core.models.network.ApiResponse;
 import io.fcmchannel.sdk.core.models.network.FcmRegistrationResponse;
 import io.fcmchannel.sdk.core.models.v2.Contact;
@@ -71,7 +69,6 @@ public class RestServices {
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(Date.class, gsonDateTypeAdapter)
                 .registerTypeAdapter(HashMap.class, new HashMapTypeAdapter())
-                .registerTypeAdapter(MessageMetadata.class, new MetadataTypeAdapter())
                 .create();
 
         Retrofit retrofit = new Retrofit.Builder()
