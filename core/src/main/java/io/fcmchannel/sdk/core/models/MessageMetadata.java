@@ -15,11 +15,11 @@ public class MessageMetadata implements Parcelable {
     @SerializedName("url_buttons")
     private List<UrlButton> urlButtons;
     @SerializedName("quick_replies")
-    private List<QuickReply> quickReplies;
+    private List<String> quickReplies;
 
     protected MessageMetadata(Parcel in) {
         in.readList(urlButtons, UrlButton.class.getClassLoader());
-        in.readList(quickReplies, QuickReply.class.getClassLoader());
+        in.readStringList(quickReplies);
     }
 
     public static final Creator<MessageMetadata> CREATOR = new Creator<MessageMetadata>() {
@@ -42,11 +42,11 @@ public class MessageMetadata implements Parcelable {
         this.urlButtons = urlButtons;
     }
 
-    public List<QuickReply> getQuickReplies() {
+    public List<String> getQuickReplies() {
         return quickReplies;
     }
 
-    public void setQuickReply(List<QuickReply> quickReplies) {
+    public void setQuickReply(List<String> quickReplies) {
         this.quickReplies = quickReplies;
     }
 
@@ -58,6 +58,6 @@ public class MessageMetadata implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeList(urlButtons);
-        parcel.writeList(quickReplies);
+        parcel.writeStringList(quickReplies);
     }
 }
