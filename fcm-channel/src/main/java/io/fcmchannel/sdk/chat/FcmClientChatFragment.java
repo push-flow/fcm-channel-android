@@ -243,9 +243,7 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
 
         @Override
         public void onClickUrlButton(String url) {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(url));
-            startActivity(intent);
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         }
     };
 }
