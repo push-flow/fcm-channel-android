@@ -8,7 +8,7 @@ import java.util.List;
 
 import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.UiConfiguration;
-import io.fcmchannel.sdk.chat.metadata.OnQuickReplyClickListener;
+import io.fcmchannel.sdk.chat.metadata.OnMetadataItemClickListener;
 import io.fcmchannel.sdk.core.models.Message;
 
 /**
@@ -22,10 +22,10 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private final int iconResource;
 
     private ChatMessageViewHolder.OnChatMessageSelectedListener onChatMessageSelectedListener;
-    private final OnQuickReplyClickListener onQuickReplyClickListener;
+    private final OnMetadataItemClickListener onMetadataItemClickListener;
 
-    ChatMessagesAdapter(OnQuickReplyClickListener onQuickReplyClickListener) {
-        this.onQuickReplyClickListener = onQuickReplyClickListener;
+    ChatMessagesAdapter(OnMetadataItemClickListener onMetadataItemClickListener) {
+        this.onMetadataItemClickListener = onMetadataItemClickListener;
         this.chatMessages = new ArrayList<>();
         this.iconResource = FcmClient.getUiConfiguration().getIconResource() != UiConfiguration.INVALID_VALUE ?
                 FcmClient.getUiConfiguration().getIconResource() : FcmClient.getAppIcon();
@@ -41,7 +41,7 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ChatMessageViewHolder chatMessageViewHolder = ((ChatMessageViewHolder) holder);
         chatMessageViewHolder.setOnChatMessageSelectedListener(onChatMessageSelectedListener);
-        chatMessageViewHolder.setOnQuickReplyClickListener(onQuickReplyClickListener);
+        chatMessageViewHolder.setOnMetadataItemClickListener(onMetadataItemClickListener);
         chatMessageViewHolder.setIsRecent(position == 0);
         chatMessageViewHolder.bindView(getItem(position));
     }

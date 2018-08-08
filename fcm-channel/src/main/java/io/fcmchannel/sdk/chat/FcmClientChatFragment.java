@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -26,8 +27,9 @@ import java.util.List;
 
 import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.R;
-import io.fcmchannel.sdk.chat.metadata.OnQuickReplyClickListener;
+import io.fcmchannel.sdk.chat.metadata.OnMetadataItemClickListener;
 import io.fcmchannel.sdk.core.models.Message;
+import io.fcmchannel.sdk.core.models.UrlButton;
 import io.fcmchannel.sdk.services.FcmClientIntentService;
 import io.fcmchannel.sdk.services.FcmClientRegistrationIntentService;
 import io.fcmchannel.sdk.util.SpaceItemDecoration;
@@ -98,7 +100,7 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         container.setLayoutTransition(transition);
 
         message = (EditText) view.findViewById(R.id.message);
-        adapter = new ChatMessagesAdapter(onQuickReplyClickListener);
+        adapter = new ChatMessagesAdapter(onMetadataItemClickListener);
 
         messageList = (RecyclerView) view.findViewById(R.id.messageList);
         messageList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true));
@@ -233,10 +235,17 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         }
     };
 
-    private OnQuickReplyClickListener onQuickReplyClickListener = new OnQuickReplyClickListener() {
+    private OnMetadataItemClickListener onMetadataItemClickListener = new OnMetadataItemClickListener() {
         @Override
-        public void onClick(String reply) {
+        public void onClickQuickReply(String reply) {
             presenter.sendMessage(reply);
+        }
+
+        @Override
+        public void onClickUrlButton(String url) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(url));
+            startActivity(intent);
         }
     };
 }
