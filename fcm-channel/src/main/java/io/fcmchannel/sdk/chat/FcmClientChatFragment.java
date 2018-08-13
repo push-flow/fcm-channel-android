@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -26,11 +27,9 @@ import java.util.List;
 
 import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.R;
-import io.fcmchannel.sdk.chat.tags.OnTagClickListener;
-import io.fcmchannel.sdk.core.managers.FlowRunnerManager;
-import io.fcmchannel.sdk.core.models.FlowRuleset;
+import io.fcmchannel.sdk.chat.metadata.OnMetadataItemClickListener;
 import io.fcmchannel.sdk.core.models.Message;
-import io.fcmchannel.sdk.core.models.Type;
+import io.fcmchannel.sdk.core.models.UrlButton;
 import io.fcmchannel.sdk.services.FcmClientIntentService;
 import io.fcmchannel.sdk.services.FcmClientRegistrationIntentService;
 import io.fcmchannel.sdk.util.SpaceItemDecoration;
@@ -101,13 +100,13 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         container.setLayoutTransition(transition);
 
         message = (EditText) view.findViewById(R.id.message);
-        adapter = new ChatMessagesAdapter(onTagClickListener);
+        adapter = new ChatMessagesAdapter(onMetadataItemClickListener);
 
         messageList = (RecyclerView) view.findViewById(R.id.messageList);
         messageList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true));
 
         SpaceItemDecoration messagesItemDecoration = new SpaceItemDecoration();
-        messagesItemDecoration.setVerticalSpaceHeight(messageList.getPaddingBottom()/2);
+        messagesItemDecoration.setVerticalSpaceHeight(messageList.getPaddingBottom() / 2);
         messageList.addItemDecoration(messagesItemDecoration);
         messageList.setAdapter(adapter);
 
@@ -146,7 +145,7 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
             LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
             localBroadcastManager.unregisterReceiver(messagesReceiver);
             localBroadcastManager.unregisterReceiver(onRegisteredReceiver);
-        } catch(Exception exception) {
+        } catch (Exception exception) {
             Log.e("FcmClientChat", "onStop: ", exception);
         }
     }
@@ -190,35 +189,6 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
     }
 
     @Override
-    public void setCurrentRulesets(FlowRuleset rulesets) {
-        if (rulesets != null && rulesets.getRules() != null) {
-            Type type = presenter.getFirstType(rulesets);
-            if (type == Type.Choice) {
-                adapter.setRulesets(rulesets);
-            } else {
-                message.setInputType(FlowRunnerManager.getInputTypeByType(type));
-                adapter.removeRulesets();
-            }
-        } else {
-            adapter.removeRulesets();
-        }
-    }
-
-    private void onLastMessageChanged() {
-        messageList.scrollToPosition(0);
-        loadCurrentRulesetsDelayed();
-    }
-
-    private void loadCurrentRulesetsDelayed() {
-        messageList.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                presenter.loadCurrentRulesets();
-            }
-        }, 500);
-    }
-
-    @Override
     public void showMessage(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
@@ -248,11 +218,14 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         messageList.scrollToPosition(0);
     }
 
+    private void onLastMessageChanged() {
+        messageList.scrollToPosition(0);
+    }
+
     private void restoreView() {
         message.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         message.setError(null);
         message.setText(null);
-        adapter.removeRulesets();
     }
 
     private BroadcastReceiver onRegisteredReceiver = new BroadcastReceiver() {
@@ -262,10 +235,15 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         }
     };
 
-    private OnTagClickListener onTagClickListener = new OnTagClickListener() {
+    private OnMetadataItemClickListener onMetadataItemClickListener = new OnMetadataItemClickListener() {
         @Override
-        public void onTagClick(String reply) {
+        public void onClickQuickReply(String reply) {
             presenter.sendMessage(reply);
+        }
+
+        @Override
+        public void onClickUrlButton(String url) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         }
     };
 }

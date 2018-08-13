@@ -8,8 +8,7 @@ import java.util.List;
 
 import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.UiConfiguration;
-import io.fcmchannel.sdk.chat.tags.OnTagClickListener;
-import io.fcmchannel.sdk.core.models.FlowRuleset;
+import io.fcmchannel.sdk.chat.metadata.OnMetadataItemClickListener;
 import io.fcmchannel.sdk.core.models.Message;
 
 /**
@@ -17,18 +16,16 @@ import io.fcmchannel.sdk.core.models.Message;
  */
 class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int VIEW_TYPE_TAGS = 0;
     private static final int VIEW_TYPE_TEXT_MESSAGES = 1;
 
-    private FlowRuleset rulesets;
     private List<Message> chatMessages;
     private final int iconResource;
 
     private ChatMessageViewHolder.OnChatMessageSelectedListener onChatMessageSelectedListener;
-    private final OnTagClickListener onTagClickListener;
+    private final OnMetadataItemClickListener onMetadataItemClickListener;
 
-    ChatMessagesAdapter(OnTagClickListener onTagClickListener) {
-        this.onTagClickListener = onTagClickListener;
+    ChatMessagesAdapter(OnMetadataItemClickListener onMetadataItemClickListener) {
+        this.onMetadataItemClickListener = onMetadataItemClickListener;
         this.chatMessages = new ArrayList<>();
         this.iconResource = FcmClient.getUiConfiguration().getIconResource() != UiConfiguration.INVALID_VALUE ?
                 FcmClient.getUiConfiguration().getIconResource() : FcmClient.getAppIcon();
@@ -37,28 +34,16 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case VIEW_TYPE_TAGS:
-                return new RulesViewHolder(parent.getContext(), parent, onTagClickListener);
-            case VIEW_TYPE_TEXT_MESSAGES:
-                return new ChatMessageViewHolder(parent.getContext(), parent, iconResource);
-            default:
-                throw new IllegalStateException("View type not recognized by ChatMessagesAdapter");
-        }
+        return new ChatMessageViewHolder(parent.getContext(), parent, iconResource);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        switch (getItemViewType(position)) {
-            case VIEW_TYPE_TAGS:
-                RulesViewHolder rulesViewHolder = ((RulesViewHolder)holder);
-                rulesViewHolder.bind(rulesets);
-                break;
-            case VIEW_TYPE_TEXT_MESSAGES:
-                ChatMessageViewHolder chatMessageViewHolder = ((ChatMessageViewHolder)holder);
-                chatMessageViewHolder.setOnChatMessageSelectedListener(onChatMessageSelectedListener);
-                chatMessageViewHolder.bindView(getItem(getPositionFromMessage(position)));
-        }
+        ChatMessageViewHolder chatMessageViewHolder = ((ChatMessageViewHolder) holder);
+        chatMessageViewHolder.setOnChatMessageSelectedListener(onChatMessageSelectedListener);
+        chatMessageViewHolder.setOnMetadataItemClickListener(onMetadataItemClickListener);
+        chatMessageViewHolder.setIsRecent(position == 0);
+        chatMessageViewHolder.bindView(getItem(position));
     }
 
     private Message getItem(int position) {
@@ -67,16 +52,14 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        return hasRulesets() && position == 0 ? VIEW_TYPE_TAGS : VIEW_TYPE_TEXT_MESSAGES;
+        return VIEW_TYPE_TEXT_MESSAGES;
     }
 
     @Override
     public long getItemId(int position) {
         switch (getItemViewType(position)) {
-            case VIEW_TYPE_TAGS:
-                return rulesets.getUuid().hashCode();
             case VIEW_TYPE_TEXT_MESSAGES:
-                Message chatMessage = getItem(getPositionFromMessage(position));
+                Message chatMessage = getItem(position);
                 return chatMessage.getId() != null ? chatMessage.getId().hashCode() : 0;
             default:
                 return super.getItemId(position);
@@ -85,27 +68,11 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return hasRulesets() ? chatMessages.size() + 1 : chatMessages.size();
-    }
-
-    void setRulesets(FlowRuleset rulesets) {
-        this.rulesets = rulesets;
-        notifyDataSetChanged();
-    }
-
-    void removeRulesets() {
-        if (hasRulesets()) {
-            rulesets = null;
-            notifyDataSetChanged();
-        }
+        return chatMessages.size();
     }
 
     Message getLastMessage() {
         return chatMessages.isEmpty() ? null : chatMessages.get(0);
-    }
-
-    private int getPositionFromMessage(int position) {
-        return hasRulesets() ? position - 1 : position;
     }
 
     void setMessages(List<Message> messages) {
@@ -114,23 +81,20 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     void addChatMessage(Message message) {
-        int location = chatMessages.indexOf(message);
-        if (location >= 0) {
-            chatMessages.set(location, message);
-            notifyItemChanged(location);
+        int position = chatMessages.indexOf(message);
+        if (position >= 0) {
+            chatMessages.set(position, message);
+            notifyItemChanged(position);
         } else {
             chatMessages.add(0, message);
-            notifyItemInserted(hasRulesets() ? 1 : 0);
+            notifyItemInserted( 0);
         }
-    }
-
-    private boolean hasRulesets() {
-        return rulesets != null;
+        notifyDataSetChanged();
     }
 
     public void removeChatMessage(Message message) {
         int indexOfMessage = chatMessages.indexOf(message);
-        if(indexOfMessage >= 0) {
+        if (indexOfMessage >= 0) {
             chatMessages.remove(indexOfMessage);
             notifyItemRemoved(indexOfMessage);
         }
