@@ -9,39 +9,37 @@ import android.widget.TextView;
 import java.util.List;
 
 import io.fcmchannel.sdk.R;
+import io.fcmchannel.sdk.core.models.UrlButton;
 
-/**
- * Created by john-mac on 6/30/16.
- */
-public class QuickReplyAdapter extends RecyclerView.Adapter<QuickReplyAdapter.ViewHolder> {
+public class UrlButtonAdapter extends RecyclerView.Adapter<UrlButtonAdapter.ViewHolder> {
 
-    private List<String> quickReplies;
+    private List<UrlButton> urlButtons;
     private OnMetadataItemClickListener onMetadataItemClickListener;
 
-    public QuickReplyAdapter(List<String> quickReplies, OnMetadataItemClickListener onMetadataItemClickListener) {
-        this.quickReplies = quickReplies;
+    public UrlButtonAdapter(List<UrlButton> urlButtons, OnMetadataItemClickListener onMetadataItemClickListener) {
+        this.urlButtons = urlButtons;
         this.onMetadataItemClickListener = onMetadataItemClickListener;
     }
 
     @Override
-    public QuickReplyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public UrlButtonAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ViewHolder(parent);
     }
 
     @Override
-    public void onBindViewHolder(QuickReplyAdapter.ViewHolder holder, int position) {
-        holder.bind(quickReplies.get(position));
+    public void onBindViewHolder(UrlButtonAdapter.ViewHolder holder, int position) {
+        holder.bind(urlButtons.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return quickReplies.size();
+        return urlButtons.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView text;
-        private String quickReply;
+        private UrlButton urlButton;
 
         ViewHolder(final ViewGroup parent) {
             super(LayoutInflater.from(parent.getContext()).inflate(R.layout.fcm_client_item_quick_reply, null));
@@ -49,15 +47,14 @@ public class QuickReplyAdapter extends RecyclerView.Adapter<QuickReplyAdapter.Vi
             text.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    onMetadataItemClickListener.onClickQuickReply(quickReply);
-                    parent.setVisibility(View.GONE);
+                    onMetadataItemClickListener.onClickUrlButton(urlButton.getUrl());
                 }
             });
         }
 
-        void bind(String quickReply) {
-            this.quickReply = quickReply;
-            text.setText(quickReply);
+        void bind(UrlButton urlButton) {
+            this.urlButton = urlButton;
+            text.setText(urlButton.getTitle());
         }
 
     }

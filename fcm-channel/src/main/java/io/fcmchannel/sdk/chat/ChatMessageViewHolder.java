@@ -19,8 +19,9 @@ import android.widget.TextView;
 import java.text.DateFormat;
 
 import io.fcmchannel.sdk.R;
-import io.fcmchannel.sdk.chat.metadata.OnQuickReplyClickListener;
+import io.fcmchannel.sdk.chat.metadata.OnMetadataItemClickListener;
 import io.fcmchannel.sdk.chat.metadata.QuickReplyAdapter;
+import io.fcmchannel.sdk.chat.metadata.UrlButtonAdapter;
 import io.fcmchannel.sdk.core.models.Message;
 import io.fcmchannel.sdk.util.SpaceItemDecoration;
 
@@ -36,10 +37,10 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
     private TextView message;
     private TextView date;
     private ImageView icon;
-    private RecyclerView quickReplies;
+    private RecyclerView metadataList;
 
     private OnChatMessageSelectedListener onChatMessageSelectedListener;
-    private OnQuickReplyClickListener onQuickReplyClickListener;
+    private OnMetadataItemClickListener onMetadataItemClickListener;
 
     private boolean isRecent;
 
@@ -63,13 +64,13 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         this.icon = (ImageView) itemView.findViewById(R.id.icon);
         this.icon.setImageResource(iconRes);
 
-        this.quickReplies = (RecyclerView) itemView.findViewById(R.id.quickReplies);
+        this.metadataList = (RecyclerView) itemView.findViewById(R.id.metadataList);
 
-        SpaceItemDecoration quickReplyItemDecoration = new SpaceItemDecoration();
-        quickReplyItemDecoration.setHorizontalSpaceWidth(parent.getPaddingBottom());
+        SpaceItemDecoration metadataItemDecoration = new SpaceItemDecoration();
+        metadataItemDecoration.setHorizontalSpaceWidth(parent.getPaddingBottom());
 
-        this.quickReplies.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-        this.quickReplies.addItemDecoration(quickReplyItemDecoration);
+        this.metadataList.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        this.metadataList.addItemDecoration(metadataItemDecoration);
 
         this.itemView.setOnLongClickListener(onLongClickListener);
 
@@ -92,7 +93,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
     private void bindContainer(Message chatMessage) {
         boolean incoming = isIncoming(chatMessage);
         icon.setVisibility(incoming ? View.GONE : View.VISIBLE);
-        setupQuickReplies(chatMessage);
+        setupMetadataItem();
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) parent.getLayoutParams();
         setupBubblePosition(incoming, params);
         parent.setLayoutParams(params);
@@ -124,17 +125,15 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
                 , context.getResources().getDisplayMetrics());
     }
 
-    private void setupQuickReplies(Message chatMessage) {
-        boolean hasQuickReplies = chatMessage.getMetadata() != null &&
-                chatMessage.getMetadata().getQuickReplies() != null  &&
-                chatMessage.getMetadata().getQuickReplies().size() > 0;
-
-        if (hasQuickReplies && isRecent) {
-            QuickReplyAdapter quickReplyAdapter = new QuickReplyAdapter(chatMessage.getMetadata().getQuickReplies(), onQuickReplyClickListener);
-            quickReplies.setAdapter(quickReplyAdapter);
-            quickReplies.setVisibility(View.VISIBLE);
+    private void setupMetadataItem() {
+        if (checkHasQuickReplies() && isRecent) {
+            metadataList.setAdapter(new QuickReplyAdapter(chatMessage.getMetadata().getQuickReplies(), onMetadataItemClickListener));
+            metadataList.setVisibility(View.VISIBLE);
+        } else if (checkHasUrlButtons()) {
+            metadataList.setAdapter(new UrlButtonAdapter(chatMessage.getMetadata().getUrlButtons(), onMetadataItemClickListener));
+            metadataList.setVisibility(View.VISIBLE);
         } else {
-            quickReplies.setVisibility(View.GONE);
+            metadataList.setVisibility(View.GONE);
         }
     }
 
@@ -160,7 +159,19 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         void onChatMessageSelected(Message chatMessage);
     }
 
-    void setOnQuickReplyClickListener(OnQuickReplyClickListener onQuickReplyClickListener) {
-        this.onQuickReplyClickListener = onQuickReplyClickListener;
+    void setOnMetadataItemClickListener(OnMetadataItemClickListener onMetadataItemClickListener) {
+        this.onMetadataItemClickListener = onMetadataItemClickListener;
+    }
+
+    private boolean checkHasQuickReplies() {
+        return chatMessage.getMetadata() != null &&
+                chatMessage.getMetadata().getQuickReplies() != null &&
+                chatMessage.getMetadata().getQuickReplies().size() > 0;
+    }
+
+    private boolean checkHasUrlButtons() {
+        return chatMessage.getMetadata() != null &&
+                chatMessage.getMetadata().getUrlButtons() != null &&
+                chatMessage.getMetadata().getUrlButtons().size() > 0;
     }
 }
