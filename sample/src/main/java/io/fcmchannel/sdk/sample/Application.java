@@ -18,9 +18,9 @@ public class Application extends android.app.Application {
         super.onCreate();
 
         FcmClient.initialize(new FcmClient.Builder(this)
-                .setHost(Constants.HOST)
-                .setToken(Constants.TOKEN)
-                .setChannel(Constants.CHANNEL)
+                .setHost(getString(R.string.host))
+                .setToken(getString(R.string.token))
+                .setChannel(getString(R.string.channel))
                 .setRegistrationServiceClass(PushRegistrationService.class)
                 .setUiConfiguration(new UiConfiguration()
                         .setPermissionMessage("Please give me permission to open floating chat!")
