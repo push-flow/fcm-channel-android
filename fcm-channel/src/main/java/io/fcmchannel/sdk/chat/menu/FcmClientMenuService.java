@@ -39,15 +39,6 @@ public class FcmClientMenuService extends HoverMenuService {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null) {
-            unreadMessages = intent.getIntExtra(EXTRA_UNREAD_MESSAGES, 0);
-            setUnreadMessages(unreadMessages);
-        }
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    @Override
     public void onCreate() {
         super.onCreate();
         visible = true;
@@ -55,6 +46,15 @@ public class FcmClientMenuService extends HoverMenuService {
 
         IntentFilter intentFilter = new IntentFilter(FcmClientIntentService.ACTION_MESSAGE_RECEIVED);
         LocalBroadcastManager.getInstance(this).registerReceiver(onMessageReceiver, intentFilter);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null) {
+            unreadMessages = intent.getIntExtra(EXTRA_UNREAD_MESSAGES, 0);
+            setUnreadMessages(unreadMessages);
+        }
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
