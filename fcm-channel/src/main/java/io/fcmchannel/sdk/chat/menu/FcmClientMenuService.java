@@ -33,6 +33,8 @@ public class FcmClientMenuService extends HoverMenuService {
     }
 
     public static void showFloatingMenu(Context context, int unreadMessages) {
+        if (!FcmClient.getPreferences().isFloatingChatEnabled()) return;
+
         Intent intent = new Intent(context, FcmClientMenuService.class);
         intent.putExtra(EXTRA_UNREAD_MESSAGES, unreadMessages);
         context.startService(intent);
