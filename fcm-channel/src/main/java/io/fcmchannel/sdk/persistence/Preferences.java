@@ -13,6 +13,7 @@ import java.util.Map;
  */
 public class Preferences {
 
+    private static final String KEY_FLOATING_CHAT_ENABLED = "floatingChatEnabled";
     private static final String KEY_URN = "urn";
     private static final String KEY_FCM_TOKEN = "fcmToken";
     private static final String KEY_CONTACT_UUID = "contactUuid";
@@ -29,6 +30,15 @@ public class Preferences {
         this.sharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
         this.prefix = context.getPackageName();
         this.objects = new HashMap<>();
+    }
+
+    public boolean isFloatingChatEnabled() {
+        return Boolean.valueOf(sharedPreferences.getString(getKey(KEY_FLOATING_CHAT_ENABLED), "true"));
+    }
+
+    public Preferences setFloatingChatEnabled(boolean enabled) {
+        this.objects.put(getKey(KEY_FLOATING_CHAT_ENABLED), String.valueOf(enabled));
+        return this;
     }
 
     public String getContactUuid() {

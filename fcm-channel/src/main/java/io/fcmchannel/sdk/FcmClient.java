@@ -73,6 +73,9 @@ public class FcmClient {
             FcmClient.services = new RestServices(host, getToken());
         }
         FcmClient.uiConfiguration = uiConfiguration;
+        FcmClient.getPreferences()
+                .setFloatingChatEnabled(uiConfiguration.isFloatingChatEnabled())
+                .commit();
     }
 
     public static UiConfiguration getUiConfiguration() {

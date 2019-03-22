@@ -33,6 +33,8 @@ public class UiConfiguration {
 
     private String titleString = "";
 
+    private boolean floatingChatEnabled = true;
+
     public int getBackResource() {
         return backResource;
     }
@@ -84,6 +86,15 @@ public class UiConfiguration {
 
     public UiConfiguration setTitleString(String titleString) {
         this.titleString = titleString;
+        return this;
+    }
+
+    public boolean isFloatingChatEnabled() {
+        return floatingChatEnabled;
+    }
+
+    public UiConfiguration setFloatingChatEnabled(boolean enabled) {
+        floatingChatEnabled = enabled;
         return this;
     }
 
