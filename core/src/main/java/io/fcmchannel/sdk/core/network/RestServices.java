@@ -58,10 +58,9 @@ public class RestServices {
                 .addInterceptor(logging)
                 .build();
 
-        GsonDateTypeAdapter gsonDateTypeAdapter = new GsonDateTypeAdapter();
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .registerTypeAdapter(Date.class, gsonDateTypeAdapter)
+                .registerTypeAdapter(Date.class, new GsonDateTypeAdapter())
                 .registerTypeAdapter(HashMap.class, new HashMapTypeAdapter())
                 .create();
 
