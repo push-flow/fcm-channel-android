@@ -10,7 +10,7 @@ import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.R;
 import io.fcmchannel.sdk.core.models.Message;
 import io.fcmchannel.sdk.core.models.network.ApiResponse;
-import io.fcmchannel.sdk.core.models.v2.Contact;
+import io.fcmchannel.sdk.core.models.Contact;
 import io.fcmchannel.sdk.core.network.RestServices;
 import io.fcmchannel.sdk.util.BundleHelper;
 import retrofit2.Call;
@@ -45,7 +45,7 @@ class FcmClientChatPresenter {
         view.showLoading();
 
         String urn = FcmClient.URN_PREFIX_FCM + FcmClient.getPreferences().getUrn();
-        services.loadContactV2(urn).enqueue(new FcmClientCallback<ApiResponse<Contact>>(this) {
+        services.loadContact(urn).enqueue(new FcmClientCallback<ApiResponse<Contact>>(this) {
             @Override
             public void onResponse(Call<ApiResponse<Contact>> call, Response<ApiResponse<Contact>> response) {
                 view.dismissLoading();

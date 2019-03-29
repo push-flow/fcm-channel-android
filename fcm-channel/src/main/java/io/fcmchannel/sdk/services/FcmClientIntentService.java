@@ -104,7 +104,6 @@ public class FcmClientIntentService extends FirebaseMessagingService {
     protected void onCreateLocalNotification(NotificationCompat.Builder builder) {
         NotificationManager mNotificationManager =
                 (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(
                     NOTIFICATION_CHANNEL_ID,

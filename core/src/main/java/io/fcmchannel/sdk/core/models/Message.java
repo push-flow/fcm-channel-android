@@ -4,14 +4,10 @@ import android.support.annotation.StringDef;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.json.JSONObject;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
 import java.util.List;
-
-import io.fcmchannel.sdk.core.models.v2.Contact;
 
 /**
  * Created by johncordeiro on 01/09/15.

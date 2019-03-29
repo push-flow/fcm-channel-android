@@ -1,4 +1,4 @@
-package io.fcmchannel.sdk.core.models.v1;
+package io.fcmchannel.sdk.core.models;
 
 import android.os.Parcel;
 
@@ -7,17 +7,18 @@ import java.util.List;
 import io.fcmchannel.sdk.core.models.base.ContactBase;
 
 /**
- * Created by johncordeiro on 18/08/15.
+ * Created by John Cordeiro on 5/18/17.
  */
+
 public class Contact extends ContactBase {
 
-    private List<String> groups;
+    private List<Group> groups;
 
-    public List<String> getGroups() {
+    public List<Group> getGroups() {
         return groups;
     }
 
-    public Contact setGroups(List<String> groups) {
+    public Contact setGroups(List<Group> groups) {
         this.groups = groups;
         return this;
     }
@@ -30,7 +31,7 @@ public class Contact extends ContactBase {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeStringList(this.groups);
+        dest.writeTypedList(this.groups);
     }
 
     public Contact() {
@@ -38,7 +39,7 @@ public class Contact extends ContactBase {
 
     protected Contact(Parcel in) {
         super(in);
-        this.groups = in.createStringArrayList();
+        this.groups = in.createTypedArrayList(Group.CREATOR);
     }
 
     public static final Creator<Contact> CREATOR = new Creator<Contact>() {
