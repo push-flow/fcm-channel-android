@@ -41,6 +41,6 @@ public interface RapidProApi {
     Call<ApiResponse<Contact>> loadContact(@Header("Authorization") String token, @Query("urn") String urn);
 
     @POST("api/v2/contacts.json")
-    Call<Contact> saveContactV2(@Header("Authorization") String token,
+    Call<Contact> saveContact(@Header("Authorization") String token,
                                 @Query("uuid") String contactUuid, @Body Contact contact);
 }

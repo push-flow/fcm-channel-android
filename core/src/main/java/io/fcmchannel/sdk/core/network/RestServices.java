@@ -86,8 +86,8 @@ public class RestServices {
         return rapidProApi.sendReceivedMessage(channel, from, fcmToken, msg);
     }
 
-    public Call<Contact> saveContactV2(Contact contact) {
-        return rapidProApi.saveContactV2(token, contact.getUuid(), contact);
+    public Call<Contact> saveContact(Contact contact) {
+        return rapidProApi.saveContact(token, contact.getUuid(), contact);
     }
 
     public Call<ApiResponse<Message>> loadMessages(String contactUuid) {

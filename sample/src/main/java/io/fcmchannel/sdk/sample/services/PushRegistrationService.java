@@ -21,7 +21,7 @@ public class PushRegistrationService extends FcmClientRegistrationIntentService 
 
         try {
             RestServices restServices = FcmClient.getServices();
-            restServices.saveContactV2(contact).execute();
+            restServices.saveContact(contact).execute();
         } catch (Exception exception) {
             Log.e(TAG, "onFcmRegistered: ", exception);
         }
