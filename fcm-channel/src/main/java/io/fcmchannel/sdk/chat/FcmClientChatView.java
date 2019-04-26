@@ -2,7 +2,6 @@ package io.fcmchannel.sdk.chat;
 
 import java.util.List;
 
-import io.fcmchannel.sdk.core.models.FlowRuleset;
 import io.fcmchannel.sdk.core.models.Message;
 
 /**

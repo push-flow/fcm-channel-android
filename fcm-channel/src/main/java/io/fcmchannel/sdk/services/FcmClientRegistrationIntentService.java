@@ -12,7 +12,7 @@ import java.util.Collections;
 
 import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.core.models.network.FcmRegistrationResponse;
-import io.fcmchannel.sdk.core.models.v2.Contact;
+import io.fcmchannel.sdk.core.models.Contact;
 import io.fcmchannel.sdk.core.network.RestServices;
 import io.fcmchannel.sdk.persistence.Preferences;
 import retrofit2.Response;
