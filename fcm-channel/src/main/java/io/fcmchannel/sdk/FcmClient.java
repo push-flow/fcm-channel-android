@@ -19,7 +19,7 @@ import io.fcmchannel.sdk.chat.FcmClientChatActivity;
 import io.fcmchannel.sdk.chat.FcmClientChatFragment;
 import io.fcmchannel.sdk.chat.menu.FcmClientMenuService;
 import io.fcmchannel.sdk.core.models.network.FcmRegistrationResponse;
-import io.fcmchannel.sdk.core.models.v2.Contact;
+import io.fcmchannel.sdk.core.models.Contact;
 import io.fcmchannel.sdk.core.network.RestServices;
 import io.fcmchannel.sdk.listeners.SendMessageListener;
 import io.fcmchannel.sdk.permission.PermissionDialog;
@@ -73,6 +73,9 @@ public class FcmClient {
             FcmClient.services = new RestServices(host, getToken());
         }
         FcmClient.uiConfiguration = uiConfiguration;
+        FcmClient.getPreferences()
+                .setFloatingChatEnabled(uiConfiguration.isFloatingChatEnabled())
+                .commit();
     }
 
     public static UiConfiguration getUiConfiguration() {

@@ -3,7 +3,7 @@ package io.fcmchannel.sdk.sample.services;
 import android.util.Log;
 
 import io.fcmchannel.sdk.FcmClient;
-import io.fcmchannel.sdk.core.models.v2.Contact;
+import io.fcmchannel.sdk.core.models.Contact;
 import io.fcmchannel.sdk.core.network.RestServices;
 import io.fcmchannel.sdk.services.FcmClientRegistrationIntentService;
 
@@ -21,7 +21,7 @@ public class PushRegistrationService extends FcmClientRegistrationIntentService 
 
         try {
             RestServices restServices = FcmClient.getServices();
-            restServices.saveContactV2(contact).execute();
+            restServices.saveContact(contact).execute();
         } catch (Exception exception) {
             Log.e(TAG, "onFcmRegistered: ", exception);
         }
