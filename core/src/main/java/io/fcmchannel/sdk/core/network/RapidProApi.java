@@ -34,13 +34,13 @@ public interface RapidProApi {
                                            @Field("fcm_token") String fcmToken,
                                            @Field("msg") String msg);
 
-    @GET("messages.json")
+    @GET("api/v2/messages.json")
     Call<ApiResponse<Message>> listMessages(@Header("Authorization") String token, @Query("contact") String contactUuid);
 
-    @GET("contacts.json")
+    @GET("api/v2/contacts.json")
     Call<ApiResponse<Contact>> loadContact(@Header("Authorization") String token, @Query("urn") String urn);
 
-    @POST("contacts.json")
+    @POST("api/v2/contacts.json")
     Call<Contact> saveContact(@Header("Authorization") String token,
                                 @Query("uuid") String contactUuid, @Body Contact contact);
 }
