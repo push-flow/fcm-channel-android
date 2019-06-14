@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clipToPadding="false"
-    android:orientation="vertical"
-    tools:background="@android:color/darker_gray">
+    android:orientation="vertical">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -31,8 +31,8 @@
                 android:gravity="start"
                 android:padding="4dp"
                 android:textAlignment="viewStart"
-                android:textColor="@android:color/black"
-                tools:text="Mensagem do chat, testando, testando Mensagem do chat, testando, testando Mensagem do chat, testando, testando Mensagem do chat, testando, testando" />
+                tools:text="Mensagem do chat, testando, testando Mensagem do chat, testando, testando Mensagem do chat, testando, testando Mensagem do chat, testando, testando"
+                tools:textColor="@android:color/white" />
 
             <TextView
                 android:id="@+id/chatMessageDate"
@@ -67,7 +67,8 @@
         android:clipToPadding="false"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        tools:layout_height="60dp"
+        android:orientation="horizontal"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         tools:listitem="@layout/fcm_client_item_quick_reply" />
 
 </LinearLayout>

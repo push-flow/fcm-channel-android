@@ -1,28 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/fcm_client_gray">
+    android:layout_height="match_parent">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:visibility="gone"
-        style="?android:attr/progressBarStyleLarge" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/messageList"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/containerSeparator"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:clipToPadding="false"/>
+        android:layout_above="@+id/containerSeparator">
+
+        <ImageView
+            android:id="@+id/background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/fcm_client_gray"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
+            tools:targetApi="jelly_bean" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/messageList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:clipToPadding="false"
+            tools:listitem="@layout/fcm_client_item_chat_message" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+    </FrameLayout>
 
     <View
         android:id="@+id/containerSeparator"
@@ -41,8 +56,8 @@
         android:minHeight="52dp"
         android:textColor="@color/fcm_client_black"
         android:textColorHint="@color/fcm_client_gray_dark_3"
-        android:paddingLeft="10dp"
-        android:paddingStart="10dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
         android:gravity="start|center_vertical"
         android:textAlignment="viewStart"
         android:inputType="textMultiLine"

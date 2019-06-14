@@ -100,6 +100,8 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
     private void setupView(View view) {
         chatUiConfiguration = FcmClient.getUiConfiguration().getChatUiConfiguration();
 
+        setupChatBackground((ImageView) view.findViewById(R.id.background));
+
         RelativeLayout container = view.findViewById(R.id.container);
         LayoutTransition transition = new LayoutTransition();
         transition.setDuration(500);
@@ -125,6 +127,18 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         }
 
         progressBar = view.findViewById(R.id.progressBar);
+    }
+
+    private void setupChatBackground(ImageView chatBackground) {
+        int chatBackgroundColor = chatUiConfiguration.getChatBackgroundColor();
+        int chatBackgroundImage = chatUiConfiguration.getChatBackgroundImage();
+
+        if (chatBackgroundImage != INVALID_VALUE) {
+            chatBackground.setBackgroundDrawable(null);
+            chatBackground.setImageResource(chatBackgroundImage);
+        } else if (chatBackgroundColor != INVALID_VALUE) {
+            chatBackground.getBackground().setColorFilter(chatBackgroundColor, PorterDuff.Mode.SRC_IN);
+        }
     }
 
     @Override

@@ -18,6 +18,8 @@ public class ChatUiConfiguration {
     private int sendMessageIconColor = INVALID_VALUE;
     private int receivedMessageIcon = INVALID_VALUE;
     private boolean receivedMessageIconOnTop = false;
+    private int chatBackgroundColor = INVALID_VALUE;
+    private int chatBackgroundImage = INVALID_VALUE;
 
     @DrawableRes
     public int getSentMessageBackground() {
@@ -105,6 +107,26 @@ public class ChatUiConfiguration {
 
     public ChatUiConfiguration setReceivedMessageIconOnTop(boolean receivedMessageIconOnTop) {
         this.receivedMessageIconOnTop = receivedMessageIconOnTop;
+        return this;
+    }
+
+    @ColorInt
+    public int getChatBackgroundColor() {
+        return chatBackgroundColor;
+    }
+
+    public ChatUiConfiguration setChatBackgroundColor(@ColorInt int chatBackgroundColor) {
+        this.chatBackgroundColor = chatBackgroundColor;
+        return this;
+    }
+
+    @DrawableRes
+    public int getChatBackgroundImage() {
+        return chatBackgroundImage;
+    }
+
+    public ChatUiConfiguration setChatBackgroundImage(@DrawableRes int chatBackgroundImage) {
+        this.chatBackgroundImage = chatBackgroundImage;
         return this;
     }
 
