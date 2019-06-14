@@ -108,38 +108,46 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         boolean incoming = isIncoming(chatMessage);
         icon.setVisibility(incoming ? View.GONE : View.VISIBLE);
         setupMetadataItem();
+
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) parent.getLayoutParams();
         setupBubblePosition(incoming, params);
         parent.setLayoutParams(params);
 
-        int drawable = incoming ? R.drawable.fcm_client_bubble_me : R.drawable.fcm_client_bubble_other;
-        parent.setBackgroundResource(drawable);
-
+        setupMessageBackground(parent, incoming);
         setupMessageBackgroundColor(parent.getBackground(), incoming);
         setupMessageTextColor(message, incoming);
     }
 
+    private void setupMessageBackground(View message, boolean incoming) {
+        if (incoming) {
+            int sentMessageBackgroundRes = chatUiConfiguration.getSentMessageBackgroundRes();
+            message.setBackgroundResource(sentMessageBackgroundRes != INVALID_VALUE
+                    ? sentMessageBackgroundRes : R.drawable.fcm_client_bubble_me);
+        } else {
+            int receivedMessageBackgroundRes = chatUiConfiguration.getReceivedMessageBackgroundRes();
+            message.setBackgroundResource(receivedMessageBackgroundRes != INVALID_VALUE
+                    ? receivedMessageBackgroundRes : R.drawable.fcm_client_bubble_other);
+        }
+    }
+
     private void setupMessageBackgroundColor(Drawable background, boolean incoming) {
-        int sentMessageBackgroundColor = chatUiConfiguration.getSentMessageBackgroundColor();
         int receivedMessageBackgroundColor = chatUiConfiguration.getReceivedMessageBackgroundColor();
+        int sentMessageBackgroundColor = chatUiConfiguration.getSentMessageBackgroundColor();
 
         if (incoming && sentMessageBackgroundColor != INVALID_VALUE) {
             background.setColorFilter(sentMessageBackgroundColor, PorterDuff.Mode.SRC_IN);
-        } else if (receivedMessageBackgroundColor != INVALID_VALUE) {
+        } else if (!incoming && receivedMessageBackgroundColor != INVALID_VALUE) {
             background.setColorFilter(receivedMessageBackgroundColor, PorterDuff.Mode.SRC_IN);
         }
     }
 
     private void setupMessageTextColor(TextView text, boolean incoming) {
-        int sentMessageTextColor = chatUiConfiguration.getSentMessageTextColor();
-        int receivedMessageTextColor = chatUiConfiguration.getReceivedMessageTextColor();
-
         if (incoming) {
-            if (sentMessageTextColor != INVALID_VALUE) text.setTextColor(sentMessageTextColor);
-            else text.setTextColor(Color.BLACK);
+            int sentMessageTextColor = chatUiConfiguration.getSentMessageTextColor();
+            text.setTextColor(sentMessageTextColor != INVALID_VALUE ? sentMessageTextColor : Color.BLACK);
         } else {
-            if (receivedMessageTextColor != INVALID_VALUE) text.setTextColor(receivedMessageTextColor);
-            else text.setTextColor(Color.WHITE);
+            int receivedMessageTextColor = chatUiConfiguration.getReceivedMessageTextColor();
+            text.setTextColor(receivedMessageTextColor != INVALID_VALUE ? receivedMessageTextColor : Color.WHITE);
         }
     }
 
