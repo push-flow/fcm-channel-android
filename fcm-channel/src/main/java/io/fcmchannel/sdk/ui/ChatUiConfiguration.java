@@ -24,6 +24,8 @@ public class ChatUiConfiguration {
     @ColorInt
     private int receivedMessageTextColor = INVALID_VALUE;
 
+    private boolean receivedMessageIconOnTop = false;
+
     public int getReceivedMessageIconRes() {
         return receivedMessageIconRes != INVALID_VALUE ? receivedMessageIconRes : FcmClient.getAppIcon();
     }
@@ -86,6 +88,15 @@ public class ChatUiConfiguration {
 
     public ChatUiConfiguration setReceivedMessageTextColor(int receivedMessageTextColor) {
         this.receivedMessageTextColor = receivedMessageTextColor;
+        return this;
+    }
+
+    public boolean isReceivedMessageIconOnTop() {
+        return receivedMessageIconOnTop;
+    }
+
+    public ChatUiConfiguration setReceivedMessageIconOnTop(boolean receivedMessageIconOnTop) {
+        this.receivedMessageIconOnTop = receivedMessageIconOnTop;
         return this;
     }
 

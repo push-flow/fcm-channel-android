@@ -92,6 +92,11 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
         icon.setImageResource(receivedMessageIconRes != INVALID_VALUE
                 ? receivedMessageIconRes : FcmClient.getAppIcon());
+
+        if (chatUiConfiguration.isReceivedMessageIconOnTop()) {
+            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) icon.getLayoutParams();
+            layoutParams.gravity = Gravity.TOP;
+        }
     }
 
     void bindView(Message chatMessage) {
