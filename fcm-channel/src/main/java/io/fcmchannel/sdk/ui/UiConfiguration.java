@@ -1,8 +1,11 @@
-package io.fcmchannel.sdk;
+package io.fcmchannel.sdk.ui;
 
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StyleRes;
+
+import io.fcmchannel.sdk.FcmClient;
+import io.fcmchannel.sdk.R;
 
 /**
  * Created by john-mac on 7/1/16.
@@ -13,26 +16,18 @@ public class UiConfiguration {
 
     @DrawableRes
     private int backResource = R.drawable.fcm_client_ic_arrow_back_white;
-
     @DrawableRes
-    private int iconResource = INVALID_VALUE;
-
-    @DrawableRes
-    private int iconFloatingChat = INVALID_VALUE;
-
+    private int floatingChatIconRes = INVALID_VALUE;
     @ColorInt
     private int toolbarColor = INVALID_VALUE;
-
     @ColorInt
     private int titleColor = INVALID_VALUE;
-
     @StyleRes
     private int theme = INVALID_VALUE;
 
+    private ChatUiConfiguration chatUiConfiguration = new ChatUiConfiguration();
     private String permissionMessage = "";
-
     private String titleString = "";
-
     private boolean floatingChatEnabled = true;
 
     public int getBackResource() {
@@ -41,15 +36,6 @@ public class UiConfiguration {
 
     public UiConfiguration setBackResource(int backResource) {
         this.backResource = backResource;
-        return this;
-    }
-
-    public int getIconResource() {
-        return iconResource != UiConfiguration.INVALID_VALUE ? iconResource : FcmClient.getAppIcon();
-    }
-
-    public UiConfiguration setIconResource(int iconResource) {
-        this.iconResource = iconResource;
         return this;
     }
 
@@ -80,6 +66,15 @@ public class UiConfiguration {
         return this;
     }
 
+    public ChatUiConfiguration getChatUiConfiguration() {
+        return chatUiConfiguration;
+    }
+
+    public UiConfiguration setChatUiConfiguration(ChatUiConfiguration chatUiConfiguration) {
+        this.chatUiConfiguration = chatUiConfiguration;
+        return this;
+    }
+
     public String getTitleString() {
         return titleString;
     }
@@ -98,12 +93,12 @@ public class UiConfiguration {
         return this;
     }
 
-    public int getIconFloatingChat() {
-        return iconFloatingChat != UiConfiguration.INVALID_VALUE ? iconFloatingChat : FcmClient.getAppIcon();
+    public int getFloatingChatIconRes() {
+        return floatingChatIconRes != UiConfiguration.INVALID_VALUE ? floatingChatIconRes : FcmClient.getAppIcon();
     }
 
-    public UiConfiguration setIconFloatingChat(int iconFloatingChat) {
-        this.iconFloatingChat = iconFloatingChat;
+    public UiConfiguration setFloatingChatIconRes(int floatingChatIconRes) {
+        this.floatingChatIconRes = floatingChatIconRes;
         return this;
     }
 
@@ -115,4 +110,5 @@ public class UiConfiguration {
         this.permissionMessage = permissionMessage;
         return this;
     }
+
 }

@@ -44,7 +44,7 @@ public class PermissionDialog extends Dialog {
         }
 
         ImageView permissionIcon = (ImageView) findViewById(R.id.fcm_client_tab_view).findViewById(R.id.icon);
-        int iconFloatingChat = FcmClient.getUiConfiguration().getIconFloatingChat();
+        int iconFloatingChat = FcmClient.getUiConfiguration().getFloatingChatIconRes();
         RoundedBitmapDrawable roundedBitmap = BitmapHelper.getRoundedBitmap(getContext(), iconFloatingChat, getRadius());
         permissionIcon.setImageDrawable(roundedBitmap);
 

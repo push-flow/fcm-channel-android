@@ -25,6 +25,7 @@ import io.fcmchannel.sdk.listeners.SendMessageListener;
 import io.fcmchannel.sdk.permission.PermissionDialog;
 import io.fcmchannel.sdk.persistence.Preferences;
 import io.fcmchannel.sdk.services.FcmClientRegistrationIntentService;
+import io.fcmchannel.sdk.ui.UiConfiguration;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;

@@ -17,7 +17,7 @@ import android.view.View;
 
 import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.R;
-import io.fcmchannel.sdk.UiConfiguration;
+import io.fcmchannel.sdk.ui.UiConfiguration;
 
 /**
  * Created by john-mac on 6/27/16.

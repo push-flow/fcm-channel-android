@@ -99,7 +99,8 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         container.setLayoutTransition(transition);
 
         message = view.findViewById(R.id.message);
-        adapter = new ChatMessagesAdapter(onMetadataItemClickListener);
+        adapter = new ChatMessagesAdapter(FcmClient.getUiConfiguration()
+                .getChatUiConfiguration(), onMetadataItemClickListener);
 
         messageList = view.findViewById(R.id.messageList);
         messageList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true));
