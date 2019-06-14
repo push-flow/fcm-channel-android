@@ -4,9 +4,9 @@ import android.support.annotation.ColorRes;
 import android.support.v4.content.res.ResourcesCompat;
 
 import io.fcmchannel.sdk.FcmClient;
-import io.fcmchannel.sdk.ui.UiConfiguration;
 import io.fcmchannel.sdk.sample.services.PushRegistrationService;
 import io.fcmchannel.sdk.ui.ChatUiConfiguration;
+import io.fcmchannel.sdk.ui.UiConfiguration;
 
 /**
  * Created by John Cordeiro on 5/10/17.

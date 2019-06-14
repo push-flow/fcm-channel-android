@@ -114,10 +114,9 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
         int drawable = incoming ? R.drawable.fcm_client_bubble_me : R.drawable.fcm_client_bubble_other;
         parent.setBackgroundResource(drawable);
-        setupMessageBackgroundColor(parent.getBackground(), incoming);
 
-        int textColor = incoming ? Color.BLACK : Color.WHITE;
-        message.setTextColor(textColor);
+        setupMessageBackgroundColor(parent.getBackground(), incoming);
+        setupMessageTextColor(message, incoming);
     }
 
     private void setupMessageBackgroundColor(Drawable background, boolean incoming) {
@@ -128,6 +127,19 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
             background.setColorFilter(sentMessageBackgroundColor, PorterDuff.Mode.SRC_IN);
         } else if (receivedMessageBackgroundColor != INVALID_VALUE) {
             background.setColorFilter(receivedMessageBackgroundColor, PorterDuff.Mode.SRC_IN);
+        }
+    }
+
+    private void setupMessageTextColor(TextView text, boolean incoming) {
+        int sentMessageTextColor = chatUiConfiguration.getSentMessageTextColor();
+        int receivedMessageTextColor = chatUiConfiguration.getReceivedMessageTextColor();
+
+        if (incoming) {
+            if (sentMessageTextColor != INVALID_VALUE) text.setTextColor(sentMessageTextColor);
+            else text.setTextColor(Color.BLACK);
+        } else {
+            if (receivedMessageTextColor != INVALID_VALUE) text.setTextColor(receivedMessageTextColor);
+            else text.setTextColor(Color.WHITE);
         }
     }
 
