@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -29,7 +30,6 @@ import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.R;
 import io.fcmchannel.sdk.chat.metadata.OnMetadataItemClickListener;
 import io.fcmchannel.sdk.core.models.Message;
-import io.fcmchannel.sdk.core.models.UrlButton;
 import io.fcmchannel.sdk.services.FcmClientIntentService;
 import io.fcmchannel.sdk.services.FcmClientRegistrationIntentService;
 import io.fcmchannel.sdk.util.SpaceItemDecoration;
@@ -50,7 +50,7 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         cleanUnreadMessages();
         return inflater.inflate(R.layout.fcm_client_fragment_chat, container, false);
     }
@@ -62,7 +62,7 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupView(view);
 
@@ -92,17 +92,16 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         visible = true;
     }
 
-    @SuppressWarnings("ConstantConditions")
     private void setupView(View view) {
-        RelativeLayout container = (RelativeLayout) view.findViewById(R.id.container);
+        RelativeLayout container = view.findViewById(R.id.container);
         LayoutTransition transition = new LayoutTransition();
         transition.setDuration(500);
         container.setLayoutTransition(transition);
 
-        message = (EditText) view.findViewById(R.id.message);
+        message = view.findViewById(R.id.message);
         adapter = new ChatMessagesAdapter(onMetadataItemClickListener);
 
-        messageList = (RecyclerView) view.findViewById(R.id.messageList);
+        messageList = view.findViewById(R.id.messageList);
         messageList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true));
 
         SpaceItemDecoration messagesItemDecoration = new SpaceItemDecoration();
@@ -110,10 +109,10 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         messageList.addItemDecoration(messagesItemDecoration);
         messageList.setAdapter(adapter);
 
-        ImageView sendMessage = (ImageView) view.findViewById(R.id.sendMessage);
+        ImageView sendMessage = view.findViewById(R.id.sendMessage);
         sendMessage.setOnClickListener(onSendMessageClickListener);
 
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        progressBar = view.findViewById(R.id.progressBar);
     }
 
     @Override
@@ -205,7 +204,7 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
             if (!messageText.isEmpty()) {
                 presenter.sendMessage(messageText);
             } else {
-                message.setError(getContext().getString(R.string.fcm_client_error_send_message));
+                message.setError(requireContext().getString(R.string.fcm_client_error_send_message));
             }
         }
     };
