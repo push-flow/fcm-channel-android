@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -32,13 +33,17 @@ import io.fcmchannel.sdk.chat.metadata.OnMetadataItemClickListener;
 import io.fcmchannel.sdk.core.models.Message;
 import io.fcmchannel.sdk.services.FcmClientIntentService;
 import io.fcmchannel.sdk.services.FcmClientRegistrationIntentService;
+import io.fcmchannel.sdk.ui.ChatUiConfiguration;
 import io.fcmchannel.sdk.util.SpaceItemDecoration;
+
+import static io.fcmchannel.sdk.ui.UiConfiguration.INVALID_VALUE;
 
 /**
  * Created by john-mac on 8/30/16.
  */
 public class FcmClientChatFragment extends Fragment implements FcmClientChatView {
 
+    private ChatUiConfiguration chatUiConfiguration;
     private EditText message;
     private RecyclerView messageList;
     private ProgressBar progressBar;
@@ -93,14 +98,15 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
     }
 
     private void setupView(View view) {
+        chatUiConfiguration = FcmClient.getUiConfiguration().getChatUiConfiguration();
+
         RelativeLayout container = view.findViewById(R.id.container);
         LayoutTransition transition = new LayoutTransition();
         transition.setDuration(500);
         container.setLayoutTransition(transition);
 
         message = view.findViewById(R.id.message);
-        adapter = new ChatMessagesAdapter(FcmClient.getUiConfiguration()
-                .getChatUiConfiguration(), onMetadataItemClickListener);
+        adapter = new ChatMessagesAdapter(chatUiConfiguration, onMetadataItemClickListener);
 
         messageList = view.findViewById(R.id.messageList);
         messageList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true));
@@ -112,6 +118,11 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
 
         ImageView sendMessage = view.findViewById(R.id.sendMessage);
         sendMessage.setOnClickListener(onSendMessageClickListener);
+
+        int sendMessageIconColor = chatUiConfiguration.getSendMessageIconColor();
+        if (sendMessageIconColor != INVALID_VALUE) {
+            sendMessage.setColorFilter(sendMessageIconColor, PorterDuff.Mode.SRC_IN);
+        }
 
         progressBar = view.findViewById(R.id.progressBar);
     }

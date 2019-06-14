@@ -88,7 +88,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
     private void setupReceivedMessageIcon() {
         icon = itemView.findViewById(R.id.icon);
-        int receivedMessageIconRes = this.chatUiConfiguration.getReceivedMessageIconRes();
+        int receivedMessageIconRes = this.chatUiConfiguration.getReceivedMessageIcon();
 
         icon.setImageResource(receivedMessageIconRes != INVALID_VALUE
                 ? receivedMessageIconRes : FcmClient.getAppIcon());
@@ -125,11 +125,11 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
     private void setupMessageBackground(View message, boolean incoming) {
         if (incoming) {
-            int sentMessageBackgroundRes = chatUiConfiguration.getSentMessageBackgroundRes();
+            int sentMessageBackgroundRes = chatUiConfiguration.getSentMessageBackground();
             message.setBackgroundResource(sentMessageBackgroundRes != INVALID_VALUE
                     ? sentMessageBackgroundRes : R.drawable.fcm_client_bubble_me);
         } else {
-            int receivedMessageBackgroundRes = chatUiConfiguration.getReceivedMessageBackgroundRes();
+            int receivedMessageBackgroundRes = chatUiConfiguration.getReceivedMessageBackground();
             message.setBackgroundResource(receivedMessageBackgroundRes != INVALID_VALUE
                     ? receivedMessageBackgroundRes : R.drawable.fcm_client_bubble_other);
         }
