@@ -178,10 +178,17 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
     private void setupMetadataItem() {
         if (checkHasQuickReplies() && isRecent) {
-            metadataList.setAdapter(new QuickReplyAdapter(chatMessage.getMetadata().getQuickReplies(), onMetadataItemClickListener));
+            metadataList.setAdapter(new QuickReplyAdapter(
+                    chatUiConfiguration,
+                    chatMessage.getMetadata().getQuickReplies(),
+                    onMetadataItemClickListener
+            ));
             metadataList.setVisibility(View.VISIBLE);
         } else if (checkHasUrlButtons()) {
-            metadataList.setAdapter(new UrlButtonAdapter(chatMessage.getMetadata().getUrlButtons(), onMetadataItemClickListener));
+            metadataList.setAdapter(new UrlButtonAdapter(
+                    chatUiConfiguration,
+                    chatMessage.getMetadata().getUrlButtons(),
+                    onMetadataItemClickListener));
             metadataList.setVisibility(View.VISIBLE);
         } else {
             metadataList.setVisibility(View.GONE);
