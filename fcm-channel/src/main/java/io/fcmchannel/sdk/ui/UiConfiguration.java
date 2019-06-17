@@ -12,7 +12,7 @@ import io.fcmchannel.sdk.R;
  */
 public class UiConfiguration {
 
-    public static final int INVALID_VALUE = -1;
+    public static final int INVALID_VALUE = 0;
 
     @DrawableRes
     private int backResource = R.drawable.fcm_client_ic_arrow_back_white;

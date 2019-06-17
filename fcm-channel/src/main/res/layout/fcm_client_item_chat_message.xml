@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clipToPadding="false"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginTop="8dp">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -15,11 +15,10 @@
             android:id="@+id/bubble"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_marginLeft="45dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginStart="45dp"
-            android:layout_marginTop="3dp"
+            android:layout_marginEnd="36dp"
+            android:layout_marginLeft="44dp"
+            android:layout_marginRight="48dp"
+            android:layout_marginStart="44dp"
             android:background="@drawable/fcm_client_bubble_other"
             android:orientation="vertical">
 
@@ -39,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_marginTop="3dp"
+                android:layout_margin="2dp"
                 android:textColor="@color/fcm_client_gray_light_2"
                 android:textSize="12sp"
                 tools:text="16:00" />
@@ -50,11 +49,13 @@
             android:id="@+id/icon"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:layout_gravity="bottom"
+            android:importantForAccessibility="no"
             android:visibility="gone"
             tools:src="@drawable/fcm_client_ic_send_message"
+            tools:targetApi="jelly_bean"
             tools:visibility="visible" />
 
     </FrameLayout>
@@ -63,10 +64,9 @@
         android:id="@+id/metadataList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:clipToPadding="false"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:layout_marginTop="16dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
         android:orientation="horizontal"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         tools:listitem="@layout/fcm_client_item_quick_reply" />

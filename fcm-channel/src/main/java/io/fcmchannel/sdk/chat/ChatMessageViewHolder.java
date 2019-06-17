@@ -55,8 +55,8 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
     private final int leftMarginIncoming;
     private final int leftMarginOutgoing;
-    private final int bottomMarginIncoming;
-    private final int bottomMarginOutgoing;
+    private final int rightMarginIncoming;
+    private final int rightMarginOutgoing;
 
     ChatMessageViewHolder(Context context, ViewGroup parent, ChatUiConfiguration chatUiConfiguration) {
         super(LayoutInflater.from(context).inflate(R.layout.fcm_client_item_chat_message, parent, false));
@@ -80,10 +80,10 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
         this.itemView.setOnLongClickListener(onLongClickListener);
 
-        this.leftMarginIncoming = getDpDimen(10);
-        this.leftMarginOutgoing = getDpDimen(45);
-        this.bottomMarginIncoming = getDpDimen(3);
-        this.bottomMarginOutgoing = getDpDimen(15);
+        this.leftMarginIncoming = getDpDimen(48);
+        this.rightMarginIncoming = getDpDimen(8);
+        this.leftMarginOutgoing = getDpDimen(44);
+        this.rightMarginOutgoing = getDpDimen(48);
     }
 
     private void setupReceivedMessageIcon() {
@@ -136,8 +136,8 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setupMessageBackgroundColor(Drawable background, boolean incoming) {
-        int receivedMessageBackgroundColor = chatUiConfiguration.getReceivedMessageBackgroundColor();
         int sentMessageBackgroundColor = chatUiConfiguration.getSentMessageBackgroundColor();
+        int receivedMessageBackgroundColor = chatUiConfiguration.getReceivedMessageBackgroundColor();
 
         if (incoming && sentMessageBackgroundColor != INVALID_VALUE) {
             background.setColorFilter(sentMessageBackgroundColor, PorterDuff.Mode.SRC_IN);
@@ -160,11 +160,13 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             params.gravity = incoming ? Gravity.END : Gravity.START;
             params.setMarginStart(incoming ? leftMarginIncoming : leftMarginOutgoing);
+            params.setMarginEnd(incoming ? rightMarginIncoming : rightMarginOutgoing);
         } else {
             params.gravity = incoming ? Gravity.RIGHT : Gravity.LEFT;
             params.leftMargin = incoming ? leftMarginIncoming : leftMarginOutgoing;
+            params.rightMargin = incoming ? rightMarginIncoming : rightMarginOutgoing;
         }
-        params.bottomMargin = incoming ? bottomMarginIncoming : bottomMarginOutgoing;
+        params.bottomMargin = getAdapterPosition() == 0 ? getDpDimen(8) : 0;
     }
 
     private boolean isIncoming(Message chatMessage) {
