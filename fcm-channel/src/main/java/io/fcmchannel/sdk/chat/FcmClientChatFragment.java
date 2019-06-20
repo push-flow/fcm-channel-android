@@ -16,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -114,7 +115,10 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         messageList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true));
 
         SpaceItemDecoration messagesItemDecoration = new SpaceItemDecoration();
-        messagesItemDecoration.setVerticalSpaceHeight(messageList.getPaddingBottom() / 2);
+        int spaceHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8,
+                requireContext().getResources().getDisplayMetrics());
+        messagesItemDecoration.setVerticalSpaceHeight(spaceHeight);
+
         messageList.addItemDecoration(messagesItemDecoration);
         messageList.setAdapter(adapter);
 

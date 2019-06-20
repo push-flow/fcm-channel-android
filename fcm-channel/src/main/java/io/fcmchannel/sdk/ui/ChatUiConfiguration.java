@@ -19,6 +19,8 @@ public class ChatUiConfiguration {
     private int receivedMessageIcon = INVALID_VALUE;
     private boolean sentMessageInTopDirection = false;
     private boolean receivedMessageInTopDirection = false;
+    private int sentMessageHourTextColor = INVALID_VALUE;
+    private int receivedMessageHourTextColor = INVALID_VALUE;
     private int metadataBackground = INVALID_VALUE;
     private int metadataBackgroundColor = INVALID_VALUE;
     private int chatBackgroundColor = INVALID_VALUE;
@@ -119,6 +121,26 @@ public class ChatUiConfiguration {
 
     public ChatUiConfiguration setSentMessageInTopDirection(boolean sentMessageInTopDirection) {
         this.sentMessageInTopDirection = sentMessageInTopDirection;
+        return this;
+    }
+
+    @ColorInt
+    public int getSentMessageHourTextColor() {
+        return sentMessageHourTextColor;
+    }
+
+    public ChatUiConfiguration setSentMessageHourTextColor(@ColorInt int sentMessageHourTextColor) {
+        this.sentMessageHourTextColor = sentMessageHourTextColor;
+        return this;
+    }
+
+    @ColorInt
+    public int getReceivedMessageHourTextColor() {
+        return receivedMessageHourTextColor;
+    }
+
+    public ChatUiConfiguration setReceivedMessageHourTextColor(@ColorInt int receivedMessageHourTextColor) {
+        this.receivedMessageHourTextColor = receivedMessageHourTextColor;
         return this;
     }
 

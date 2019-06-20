@@ -121,6 +121,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         setupMessageBackground(parent, incoming);
         setupMessageBackgroundColor(parent.getBackground(), incoming);
         setupMessageTextColor(message, incoming);
+        setupMessageHourTextColor(date, incoming);
     }
 
     private void setupMessageBackground(View message, boolean incoming) {
@@ -166,6 +167,17 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
+    private void setupMessageHourTextColor(TextView hour, boolean incoming) {
+        int sentMessageHourTextColor = chatUiConfiguration.getSentMessageHourTextColor();
+        int receivedMessageHourTextColor = chatUiConfiguration.getReceivedMessageHourTextColor();
+
+        if (incoming && sentMessageHourTextColor != INVALID_VALUE) {
+            hour.setTextColor(sentMessageHourTextColor);
+        } else if (receivedMessageHourTextColor != INVALID_VALUE) {
+            hour.setTextColor(receivedMessageHourTextColor);
+        }
+    }
+
     private void setupBubblePosition(boolean incoming, FrameLayout.LayoutParams params) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             params.gravity = incoming ? Gravity.END : Gravity.START;
@@ -176,7 +188,6 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
             params.leftMargin = incoming ? leftMarginIncoming : leftMarginOutgoing;
             params.rightMargin = incoming ? rightMarginIncoming : rightMarginOutgoing;
         }
-        params.bottomMargin = getAdapterPosition() == 0 ? getDpDimen(8) : 0;
     }
 
     private boolean isIncoming(Message chatMessage) {
