@@ -17,7 +17,8 @@ public class ChatUiConfiguration {
     private int receivedMessageTextColor = INVALID_VALUE;
     private int sendMessageIconColor = INVALID_VALUE;
     private int receivedMessageIcon = INVALID_VALUE;
-    private boolean receivedMessageIconOnTop = false;
+    private boolean sentMessageInTopDirection = false;
+    private boolean receivedMessageInTopDirection = false;
     private int metadataBackground = INVALID_VALUE;
     private int metadataBackgroundColor = INVALID_VALUE;
     private int chatBackgroundColor = INVALID_VALUE;
@@ -103,12 +104,21 @@ public class ChatUiConfiguration {
         return this;
     }
 
-    public boolean isReceivedMessageIconOnTop() {
-        return receivedMessageIconOnTop;
+    public boolean isReceivedMessageInTopDirection() {
+        return receivedMessageInTopDirection;
     }
 
-    public ChatUiConfiguration setReceivedMessageIconOnTop(boolean receivedMessageIconOnTop) {
-        this.receivedMessageIconOnTop = receivedMessageIconOnTop;
+    public ChatUiConfiguration setReceivedMessageInTopDirection(boolean receivedMessageInTopDirection) {
+        this.receivedMessageInTopDirection = receivedMessageInTopDirection;
+        return this;
+    }
+
+    public boolean isSentMessageInTopDirection() {
+        return sentMessageInTopDirection;
+    }
+
+    public ChatUiConfiguration setSentMessageInTopDirection(boolean sentMessageInTopDirection) {
+        this.sentMessageInTopDirection = sentMessageInTopDirection;
         return this;
     }
 

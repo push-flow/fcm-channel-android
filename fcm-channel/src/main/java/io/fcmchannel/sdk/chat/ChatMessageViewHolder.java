@@ -82,7 +82,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
         this.leftMarginIncoming = getDpDimen(48);
         this.rightMarginIncoming = getDpDimen(8);
-        this.leftMarginOutgoing = getDpDimen(44);
+        this.leftMarginOutgoing = getDpDimen(40);
         this.rightMarginOutgoing = getDpDimen(48);
     }
 
@@ -93,7 +93,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         icon.setImageResource(receivedMessageIconRes != INVALID_VALUE
                 ? receivedMessageIconRes : FcmClient.getAppIcon());
 
-        if (chatUiConfiguration.isReceivedMessageIconOnTop()) {
+        if (chatUiConfiguration.isReceivedMessageInTopDirection()) {
             FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) icon.getLayoutParams();
             layoutParams.gravity = Gravity.TOP;
         }
@@ -126,12 +126,22 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
     private void setupMessageBackground(View message, boolean incoming) {
         if (incoming) {
             int sentMessageBackgroundRes = chatUiConfiguration.getSentMessageBackground();
-            message.setBackgroundResource(sentMessageBackgroundRes != INVALID_VALUE
-                    ? sentMessageBackgroundRes : R.drawable.fcm_client_bubble_me);
+
+            if (sentMessageBackgroundRes != INVALID_VALUE)
+                message.setBackgroundResource(sentMessageBackgroundRes);
+            else if (chatUiConfiguration.isSentMessageInTopDirection())
+                message.setBackgroundResource(R.drawable.fcm_client_bubble_me_top);
+            else
+                message.setBackgroundResource(R.drawable.fcm_client_bubble_me);
         } else {
             int receivedMessageBackgroundRes = chatUiConfiguration.getReceivedMessageBackground();
-            message.setBackgroundResource(receivedMessageBackgroundRes != INVALID_VALUE
-                    ? receivedMessageBackgroundRes : R.drawable.fcm_client_bubble_other);
+
+            if (receivedMessageBackgroundRes != INVALID_VALUE)
+                message.setBackgroundResource(receivedMessageBackgroundRes);
+            else if (chatUiConfiguration.isReceivedMessageInTopDirection())
+                message.setBackgroundResource(R.drawable.fcm_client_bubble_other_top);
+            else
+                message.setBackgroundResource(R.drawable.fcm_client_bubble_other);
         }
     }
 
