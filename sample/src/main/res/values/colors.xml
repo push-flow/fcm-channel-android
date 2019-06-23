@@ -3,4 +3,11 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="white">#fff</color>
+    <color name="white_smoke">#eee</color>
+    <color name="black">#000</color>
+    <color name="mischka">#cbd5e0</color>
+    <color name="picton_blue">#5ba8ed</color>
+    <color name="rice_flower">#e8ffdc</color>
+    <color name="gray_chateau">#a3acb5</color>
 </resources>

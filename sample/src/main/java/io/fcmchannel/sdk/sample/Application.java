@@ -19,7 +19,17 @@ public class Application extends android.app.Application {
         super.onCreate();
 
         ChatUiConfiguration chatUiConfiguration = new ChatUiConfiguration()
-                .setReceivedMessageIconRes(R.mipmap.ic_launcher);
+                .setChatBackground(R.color.mischka)
+                .setSendMessageIconColor(getColorCompat(R.color.picton_blue))
+                .setSentMessageBackgroundColor(getColorCompat(R.color.rice_flower))
+                .setSentMessageTextColor(getColorCompat(R.color.black))
+                .setSentMessageHourTextColor(getColorCompat(R.color.gray_chateau))
+                .setSentMessageInTopDirection(false)
+                .setReceivedMessageIcon(R.drawable.avatar)
+                .setReceivedMessageBackgroundColor(getColorCompat(R.color.white))
+                .setReceivedMessageTextColor(getColorCompat(R.color.black))
+                .setReceivedMessageHourTextColor(getColorCompat(R.color.gray_chateau))
+                .setReceivedMessageInTopDirection(false);
 
         UiConfiguration uiConfiguration = new UiConfiguration()
                 .setPermissionMessage("Please give me permission to open floating chat!")

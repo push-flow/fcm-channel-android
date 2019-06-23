@@ -23,7 +23,7 @@ public class ChatUiConfiguration {
     private int receivedMessageHourTextColor = INVALID_VALUE;
     private int metadataBackground = INVALID_VALUE;
     private int metadataBackgroundColor = INVALID_VALUE;
-    private int chatBackgroundColor = INVALID_VALUE;
+    private int chatBackground = INVALID_VALUE;
     private int chatBackgroundImage = INVALID_VALUE;
 
     @DrawableRes
@@ -164,13 +164,13 @@ public class ChatUiConfiguration {
         return this;
     }
 
-    @ColorInt
-    public int getChatBackgroundColor() {
-        return chatBackgroundColor;
+    @DrawableRes
+    public int getChatBackground() {
+        return chatBackground;
     }
 
-    public ChatUiConfiguration setChatBackgroundColor(@ColorInt int chatBackgroundColor) {
-        this.chatBackgroundColor = chatBackgroundColor;
+    public ChatUiConfiguration setChatBackground(@DrawableRes int chatBackground) {
+        this.chatBackground = chatBackground;
         return this;
     }
 

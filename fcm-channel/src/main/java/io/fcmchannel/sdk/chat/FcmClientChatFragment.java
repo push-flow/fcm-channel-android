@@ -133,15 +133,15 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         progressBar = view.findViewById(R.id.progressBar);
     }
 
-    private void setupChatBackground(ImageView chatBackground) {
-        int chatBackgroundColor = chatUiConfiguration.getChatBackgroundColor();
+    private void setupChatBackground(ImageView imageView) {
+        int chatBackground = chatUiConfiguration.getChatBackground();
         int chatBackgroundImage = chatUiConfiguration.getChatBackgroundImage();
 
         if (chatBackgroundImage != INVALID_VALUE) {
-            chatBackground.setBackgroundDrawable(null);
-            chatBackground.setImageResource(chatBackgroundImage);
-        } else if (chatBackgroundColor != INVALID_VALUE) {
-            chatBackground.getBackground().setColorFilter(chatBackgroundColor, PorterDuff.Mode.SRC_IN);
+            imageView.setBackgroundDrawable(null);
+            imageView.setImageResource(chatBackgroundImage);
+        } else if (chatBackground != INVALID_VALUE) {
+            imageView.setBackgroundResource(chatBackground);
         }
     }
 
