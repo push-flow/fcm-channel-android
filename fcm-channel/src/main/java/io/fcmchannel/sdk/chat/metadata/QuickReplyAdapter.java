@@ -13,6 +13,8 @@ import java.util.List;
 import io.fcmchannel.sdk.R;
 import io.fcmchannel.sdk.ui.ChatUiConfiguration;
 
+import static io.fcmchannel.sdk.ui.UiConfiguration.INVALID_VALUE;
+
 /**
  * Created by john-mac on 6/30/16.
  */
@@ -72,8 +74,12 @@ public class QuickReplyAdapter extends RecyclerView.Adapter<QuickReplyAdapter.Vi
             int metadataBackground = chatUiConfiguration.getMetadataBackground();
             int metadataBackgroundColor = chatUiConfiguration.getMetadataBackgroundColor();
 
-            view.setBackgroundResource(metadataBackground);
-            view.getBackground().setColorFilter(metadataBackgroundColor, PorterDuff.Mode.SRC_IN);
+            if (metadataBackground != INVALID_VALUE) {
+                view.setBackgroundResource(metadataBackground);
+            }
+            if (metadataBackgroundColor != INVALID_VALUE) {
+                view.getBackground().setColorFilter(metadataBackgroundColor, PorterDuff.Mode.SRC_IN);
+            }
         }
 
         void bind(String quickReply) {

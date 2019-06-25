@@ -17,7 +17,7 @@ public class UiConfiguration {
     @DrawableRes
     private int backResource = R.drawable.fcm_client_ic_arrow_back_white;
     @DrawableRes
-    private int floatingChatIconRes = INVALID_VALUE;
+    private int floatingChatIcon = INVALID_VALUE;
     @ColorInt
     private int toolbarColor = INVALID_VALUE;
     @ColorInt
@@ -93,12 +93,13 @@ public class UiConfiguration {
         return this;
     }
 
-    public int getFloatingChatIconRes() {
-        return floatingChatIconRes != UiConfiguration.INVALID_VALUE ? floatingChatIconRes : FcmClient.getAppIcon();
+    @DrawableRes
+    public int getFloatingChatIcon() {
+        return floatingChatIcon != UiConfiguration.INVALID_VALUE ? floatingChatIcon : FcmClient.getAppIcon();
     }
 
-    public UiConfiguration setFloatingChatIconRes(int floatingChatIconRes) {
-        this.floatingChatIconRes = floatingChatIconRes;
+    public UiConfiguration setFloatingChatIcon(@DrawableRes int floatingChatIcon) {
+        this.floatingChatIcon = floatingChatIcon;
         return this;
     }
 

@@ -14,6 +14,8 @@ import io.fcmchannel.sdk.R;
 import io.fcmchannel.sdk.core.models.UrlButton;
 import io.fcmchannel.sdk.ui.ChatUiConfiguration;
 
+import static io.fcmchannel.sdk.ui.UiConfiguration.INVALID_VALUE;
+
 public class UrlButtonAdapter extends RecyclerView.Adapter<UrlButtonAdapter.ViewHolder> {
 
     private ChatUiConfiguration chatUiConfiguration;
@@ -69,8 +71,12 @@ public class UrlButtonAdapter extends RecyclerView.Adapter<UrlButtonAdapter.View
             int metadataBackground = chatUiConfiguration.getMetadataBackground();
             int metadataBackgroundColor = chatUiConfiguration.getMetadataBackgroundColor();
 
-            view.setBackgroundResource(metadataBackground);
-            view.getBackground().setColorFilter(metadataBackgroundColor, PorterDuff.Mode.SRC_IN);
+            if (metadataBackground != INVALID_VALUE) {
+                view.setBackgroundResource(metadataBackground);
+            }
+            if (metadataBackgroundColor != INVALID_VALUE) {
+                view.getBackground().setColorFilter(metadataBackgroundColor, PorterDuff.Mode.SRC_IN);
+            }
         }
 
         void bind(UrlButton urlButton) {

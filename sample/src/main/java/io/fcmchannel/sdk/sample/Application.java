@@ -34,7 +34,7 @@ public class Application extends android.app.Application {
         UiConfiguration uiConfiguration = new UiConfiguration()
                 .setPermissionMessage("Please give me permission to open floating chat!")
                 .setTheme(R.style.AppTheme_Blue)
-                .setFloatingChatIconRes(R.mipmap.ic_launcher)
+                .setFloatingChatIcon(R.mipmap.ic_launcher)
                 .setTitleColor(getColorCompat(android.R.color.white))
                 .setTitleString("FCM Channel Sample")
                 .setChatUiConfiguration(chatUiConfiguration);
