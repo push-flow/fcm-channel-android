@@ -2,8 +2,9 @@ package io.fcmchannel.sdk.chat;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.DrawableRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.util.Linkify;
@@ -18,12 +19,16 @@ import android.widget.TextView;
 
 import java.text.DateFormat;
 
+import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.R;
 import io.fcmchannel.sdk.chat.metadata.OnMetadataItemClickListener;
 import io.fcmchannel.sdk.chat.metadata.QuickReplyAdapter;
 import io.fcmchannel.sdk.chat.metadata.UrlButtonAdapter;
 import io.fcmchannel.sdk.core.models.Message;
+import io.fcmchannel.sdk.ui.ChatUiConfiguration;
 import io.fcmchannel.sdk.util.SpaceItemDecoration;
+
+import static io.fcmchannel.sdk.ui.UiConfiguration.INVALID_VALUE;
 
 /**
  * Created by john-mac on 4/11/16.
@@ -46,25 +51,26 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
     private final DateFormat hourFormatter;
     private final Context context;
+    private final ChatUiConfiguration chatUiConfiguration;
 
     private final int leftMarginIncoming;
     private final int leftMarginOutgoing;
-    private final int bottomMarginIncoming;
-    private final int bottomMarginOutgoing;
+    private final int rightMarginIncoming;
+    private final int rightMarginOutgoing;
 
-    ChatMessageViewHolder(Context context, ViewGroup parent, @DrawableRes int iconRes) {
+    ChatMessageViewHolder(Context context, ViewGroup parent, ChatUiConfiguration chatUiConfiguration) {
         super(LayoutInflater.from(context).inflate(R.layout.fcm_client_item_chat_message, parent, false));
         this.context = context;
+        this.chatUiConfiguration = chatUiConfiguration;
         this.hourFormatter = DateFormat.getTimeInstance(DateFormat.SHORT);
-        this.parent = (ViewGroup) itemView.findViewById(R.id.bubble);
+        this.parent = itemView.findViewById(R.id.bubble);
 
-        this.message = (TextView) itemView.findViewById(R.id.chatMessage);
-        this.date = (TextView) itemView.findViewById(R.id.chatMessageDate);
+        this.message = itemView.findViewById(R.id.chatMessage);
+        this.date = itemView.findViewById(R.id.chatMessageDate);
 
-        this.icon = (ImageView) itemView.findViewById(R.id.icon);
-        this.icon.setImageResource(iconRes);
+        setupReceivedMessageIcon();
 
-        this.metadataList = (RecyclerView) itemView.findViewById(R.id.metadataList);
+        this.metadataList = itemView.findViewById(R.id.metadataList);
 
         SpaceItemDecoration metadataItemDecoration = new SpaceItemDecoration();
         metadataItemDecoration.setHorizontalSpaceWidth(parent.getPaddingBottom());
@@ -74,10 +80,23 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
         this.itemView.setOnLongClickListener(onLongClickListener);
 
-        this.leftMarginIncoming = getDpDimen(10);
-        this.leftMarginOutgoing = getDpDimen(45);
-        this.bottomMarginIncoming = getDpDimen(3);
-        this.bottomMarginOutgoing = getDpDimen(15);
+        this.leftMarginIncoming = getDpDimen(48);
+        this.rightMarginIncoming = getDpDimen(8);
+        this.leftMarginOutgoing = getDpDimen(40);
+        this.rightMarginOutgoing = getDpDimen(48);
+    }
+
+    private void setupReceivedMessageIcon() {
+        icon = itemView.findViewById(R.id.icon);
+        int receivedMessageIconRes = this.chatUiConfiguration.getReceivedMessageIcon();
+
+        icon.setImageResource(receivedMessageIconRes != INVALID_VALUE
+                ? receivedMessageIconRes : FcmClient.getAppIcon());
+
+        if (chatUiConfiguration.isReceivedMessageInTopDirection()) {
+            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) icon.getLayoutParams();
+            layoutParams.gravity = Gravity.TOP;
+        }
     }
 
     void bindView(Message chatMessage) {
@@ -94,26 +113,81 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         boolean incoming = isIncoming(chatMessage);
         icon.setVisibility(incoming ? View.GONE : View.VISIBLE);
         setupMetadataItem();
+
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) parent.getLayoutParams();
         setupBubblePosition(incoming, params);
         parent.setLayoutParams(params);
 
-        int drawable = incoming ? R.drawable.fcm_client_bubble_me : R.drawable.fcm_client_bubble_other;
-        parent.setBackgroundResource(drawable);
+        setupMessageBackground(parent, incoming);
+        setupMessageBackgroundColor(parent.getBackground(), incoming);
+        setupMessageTextColor(message, incoming);
+        setupMessageHourTextColor(date, incoming);
+    }
 
-        int textColor = incoming ? Color.BLACK : Color.WHITE;
-        message.setTextColor(textColor);
+    private void setupMessageBackground(View message, boolean incoming) {
+        if (incoming) {
+            int sentMessageBackgroundRes = chatUiConfiguration.getSentMessageBackground();
+
+            if (sentMessageBackgroundRes != INVALID_VALUE)
+                message.setBackgroundResource(sentMessageBackgroundRes);
+            else if (chatUiConfiguration.isSentMessageInTopDirection())
+                message.setBackgroundResource(R.drawable.fcm_client_bubble_me_top);
+            else
+                message.setBackgroundResource(R.drawable.fcm_client_bubble_me);
+        } else {
+            int receivedMessageBackgroundRes = chatUiConfiguration.getReceivedMessageBackground();
+
+            if (receivedMessageBackgroundRes != INVALID_VALUE)
+                message.setBackgroundResource(receivedMessageBackgroundRes);
+            else if (chatUiConfiguration.isReceivedMessageInTopDirection())
+                message.setBackgroundResource(R.drawable.fcm_client_bubble_other_top);
+            else
+                message.setBackgroundResource(R.drawable.fcm_client_bubble_other);
+        }
+    }
+
+    private void setupMessageBackgroundColor(Drawable background, boolean incoming) {
+        int sentMessageBackgroundColor = chatUiConfiguration.getSentMessageBackgroundColor();
+        int receivedMessageBackgroundColor = chatUiConfiguration.getReceivedMessageBackgroundColor();
+
+        if (incoming && sentMessageBackgroundColor != INVALID_VALUE) {
+            background.setColorFilter(sentMessageBackgroundColor, PorterDuff.Mode.SRC_IN);
+        } else if (!incoming && receivedMessageBackgroundColor != INVALID_VALUE) {
+            background.setColorFilter(receivedMessageBackgroundColor, PorterDuff.Mode.SRC_IN);
+        }
+    }
+
+    private void setupMessageTextColor(TextView text, boolean incoming) {
+        if (incoming) {
+            int sentMessageTextColor = chatUiConfiguration.getSentMessageTextColor();
+            text.setTextColor(sentMessageTextColor != INVALID_VALUE ? sentMessageTextColor : Color.BLACK);
+        } else {
+            int receivedMessageTextColor = chatUiConfiguration.getReceivedMessageTextColor();
+            text.setTextColor(receivedMessageTextColor != INVALID_VALUE ? receivedMessageTextColor : Color.WHITE);
+        }
+    }
+
+    private void setupMessageHourTextColor(TextView hour, boolean incoming) {
+        int sentMessageHourTextColor = chatUiConfiguration.getSentMessageHourTextColor();
+        int receivedMessageHourTextColor = chatUiConfiguration.getReceivedMessageHourTextColor();
+
+        if (incoming && sentMessageHourTextColor != INVALID_VALUE) {
+            hour.setTextColor(sentMessageHourTextColor);
+        } else if (receivedMessageHourTextColor != INVALID_VALUE) {
+            hour.setTextColor(receivedMessageHourTextColor);
+        }
     }
 
     private void setupBubblePosition(boolean incoming, FrameLayout.LayoutParams params) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             params.gravity = incoming ? Gravity.END : Gravity.START;
             params.setMarginStart(incoming ? leftMarginIncoming : leftMarginOutgoing);
+            params.setMarginEnd(incoming ? rightMarginIncoming : rightMarginOutgoing);
         } else {
             params.gravity = incoming ? Gravity.RIGHT : Gravity.LEFT;
             params.leftMargin = incoming ? leftMarginIncoming : leftMarginOutgoing;
+            params.rightMargin = incoming ? rightMarginIncoming : rightMarginOutgoing;
         }
-        params.bottomMargin = incoming ? bottomMarginIncoming : bottomMarginOutgoing;
     }
 
     private boolean isIncoming(Message chatMessage) {
@@ -127,10 +201,17 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
     private void setupMetadataItem() {
         if (checkHasQuickReplies() && isRecent) {
-            metadataList.setAdapter(new QuickReplyAdapter(chatMessage.getMetadata().getQuickReplies(), onMetadataItemClickListener));
+            metadataList.setAdapter(new QuickReplyAdapter(
+                    chatUiConfiguration,
+                    chatMessage.getMetadata().getQuickReplies(),
+                    onMetadataItemClickListener
+            ));
             metadataList.setVisibility(View.VISIBLE);
         } else if (checkHasUrlButtons()) {
-            metadataList.setAdapter(new UrlButtonAdapter(chatMessage.getMetadata().getUrlButtons(), onMetadataItemClickListener));
+            metadataList.setAdapter(new UrlButtonAdapter(
+                    chatUiConfiguration,
+                    chatMessage.getMetadata().getUrlButtons(),
+                    onMetadataItemClickListener));
             metadataList.setVisibility(View.VISIBLE);
         } else {
             metadataList.setVisibility(View.GONE);
@@ -174,4 +255,5 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
                 chatMessage.getMetadata().getUrlButtons() != null &&
                 chatMessage.getMetadata().getUrlButtons().size() > 0;
     }
+
 }

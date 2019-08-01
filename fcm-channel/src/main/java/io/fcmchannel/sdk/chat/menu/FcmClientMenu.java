@@ -39,7 +39,7 @@ class FcmClientMenu extends HoverMenu {
         fcmClientContent = new FcmClientContent(context);
         this.badgeCount = badgeCount;
 
-        int iconResource = FcmClient.getUiConfiguration().getIconFloatingChat();
+        int iconResource = FcmClient.getUiConfiguration().getFloatingChatIcon();
         mChatSection = new Section(
                 new SectionId(ID_CHAT_SECTION),
                 createTabView(iconResource),
