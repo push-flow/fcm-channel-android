@@ -44,6 +44,12 @@ public class FcmClientIntentService extends FirebaseMessagingService {
     private static final String KEY_TITLE = "title";
 
     @Override
+    public void onNewToken(String token) {
+        super.onNewToken(token);
+        FcmClient.refreshContactToken();
+    }
+
+    @Override
     @CallSuper
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);

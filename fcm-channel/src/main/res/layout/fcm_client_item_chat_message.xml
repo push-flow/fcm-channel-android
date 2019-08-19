@@ -28,6 +28,7 @@
                 android:layout_gravity="start"
                 android:gravity="start"
                 android:padding="4dp"
+                android:lineSpacingExtra="4dp"
                 android:textAlignment="viewStart"
                 tools:text="Mensagem do chat, testando, testando Mensagem do chat, testando, testando Mensagem do chat, testando, testando Mensagem do chat, testando, testando"
                 tools:textColor="@android:color/white" />
