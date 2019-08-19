@@ -72,8 +72,9 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
         this.metadataList = itemView.findViewById(R.id.metadataList);
 
+        int spaceWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics());
         SpaceItemDecoration metadataItemDecoration = new SpaceItemDecoration();
-        metadataItemDecoration.setHorizontalSpaceWidth(parent.getPaddingBottom());
+        metadataItemDecoration.setHorizontalSpaceWidth(spaceWidth);
 
         this.metadataList.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         this.metadataList.addItemDecoration(metadataItemDecoration);

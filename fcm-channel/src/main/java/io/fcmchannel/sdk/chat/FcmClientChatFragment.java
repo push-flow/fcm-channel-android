@@ -114,9 +114,8 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         messageList = view.findViewById(R.id.messageList);
         messageList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true));
 
+        int spaceHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, view.getResources().getDisplayMetrics());
         SpaceItemDecoration messagesItemDecoration = new SpaceItemDecoration();
-        int spaceHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8,
-                requireContext().getResources().getDisplayMetrics());
         messagesItemDecoration.setVerticalSpaceHeight(spaceHeight);
 
         messageList.addItemDecoration(messagesItemDecoration);

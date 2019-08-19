@@ -40,11 +40,16 @@ public class SpaceItemDecoration extends RecyclerView.ItemDecoration {
         switch(type) {
             case Horizontal:
                 outRect.right = horizontalSpaceWidth;
+                if (parent.getChildAdapterPosition(view) == 0) {
+                    outRect.left = horizontalSpaceWidth;
+                }
                 break;
             case Vertical:
                 outRect.top = verticalSpaceHeight;
-                if (parent.getChildAdapterPosition(view) == 0)
+                if (parent.getChildAdapterPosition(view) == 0) {
                     outRect.bottom = verticalSpaceHeight;
+                }
+                break;
         }
 
     }
