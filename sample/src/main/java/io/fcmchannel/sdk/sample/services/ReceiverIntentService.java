@@ -1,6 +1,6 @@
 package io.fcmchannel.sdk.sample.services;
 
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 
 import io.fcmchannel.sdk.services.FcmClientIntentService;
 

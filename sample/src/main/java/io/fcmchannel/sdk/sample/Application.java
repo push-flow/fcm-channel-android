@@ -1,7 +1,7 @@
 package io.fcmchannel.sdk.sample;
 
-import android.support.annotation.ColorRes;
-import android.support.v4.content.res.ResourcesCompat;
+import androidx.annotation.ColorRes;
+import androidx.core.content.res.ResourcesCompat;
 
 import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.sample.services.PushRegistrationService;

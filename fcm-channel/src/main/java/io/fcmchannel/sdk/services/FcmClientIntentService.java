@@ -9,9 +9,9 @@ import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.provider.Settings;
-import android.support.annotation.CallSuper;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.annotation.CallSuper;
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.text.Html;
 import android.text.TextUtils;
 
