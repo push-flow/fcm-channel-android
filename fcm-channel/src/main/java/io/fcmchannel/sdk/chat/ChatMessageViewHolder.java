@@ -5,8 +5,8 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -72,8 +72,9 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
         this.metadataList = itemView.findViewById(R.id.metadataList);
 
+        int spaceWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics());
         SpaceItemDecoration metadataItemDecoration = new SpaceItemDecoration();
-        metadataItemDecoration.setHorizontalSpaceWidth(parent.getPaddingBottom());
+        metadataItemDecoration.setHorizontalSpaceWidth(spaceWidth);
 
         this.metadataList.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         this.metadataList.addItemDecoration(metadataItemDecoration);

@@ -29,6 +29,10 @@
             android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <service
+            android:name=".services.PushRegistrationService"
+            android:exported="false" />
+
         <service android:name=".services.ReceiverIntentService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -36,19 +40,8 @@
         </service>
 
         <service
-            android:name=".services.PushRegistrationService"
+            android:name="io.fcmchannel.sdk.chat.menu.FcmClientMenuService"
             android:exported="false" />
-
-        <service
-            android:name="io.fcmchannel.sdk.services.FcmClientInstanceIntentIdService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name="io.fcmchannel.sdk.chat.menu.FcmClientMenuService" />
 
     </application>
 

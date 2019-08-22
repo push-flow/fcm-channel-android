@@ -1,8 +1,8 @@
 package io.fcmchannel.sdk.ui;
 
-import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.StyleRes;
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StyleRes;
 
 import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.R;

@@ -1,6 +1,6 @@
 package io.fcmchannel.sdk.core.models;
 
-import android.support.annotation.StringDef;
+import androidx.annotation.StringDef;
 
 import com.google.gson.annotations.SerializedName;
 

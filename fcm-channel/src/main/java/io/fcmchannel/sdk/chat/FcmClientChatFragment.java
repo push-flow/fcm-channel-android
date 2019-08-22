@@ -8,12 +8,12 @@ import android.content.IntentFilter;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
 import android.util.TypedValue;
@@ -114,9 +114,8 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         messageList = view.findViewById(R.id.messageList);
         messageList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true));
 
+        int spaceHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, view.getResources().getDisplayMetrics());
         SpaceItemDecoration messagesItemDecoration = new SpaceItemDecoration();
-        int spaceHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8,
-                requireContext().getResources().getDisplayMetrics());
         messagesItemDecoration.setVerticalSpaceHeight(spaceHeight);
 
         messageList.addItemDecoration(messagesItemDecoration);
