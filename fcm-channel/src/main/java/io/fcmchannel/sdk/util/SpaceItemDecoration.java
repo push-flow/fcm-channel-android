@@ -1,7 +1,8 @@
 package io.fcmchannel.sdk.util;
 
 import android.graphics.Rect;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 /**
@@ -30,13 +31,25 @@ public class SpaceItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+    public void getItemOffsets(
+            @NonNull Rect outRect,
+            @NonNull View view,
+            @NonNull RecyclerView parent,
+            @NonNull RecyclerView.State state
+    ) {
         switch(type) {
             case Horizontal:
                 outRect.right = horizontalSpaceWidth;
+                if (parent.getChildAdapterPosition(view) == 0) {
+                    outRect.left = horizontalSpaceWidth;
+                }
                 break;
             case Vertical:
-                outRect.bottom = verticalSpaceHeight;
+                outRect.top = verticalSpaceHeight;
+                if (parent.getChildAdapterPosition(view) == 0) {
+                    outRect.bottom = verticalSpaceHeight;
+                }
+                break;
         }
 
     }

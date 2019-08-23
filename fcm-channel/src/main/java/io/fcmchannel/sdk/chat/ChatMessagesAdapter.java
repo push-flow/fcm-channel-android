@@ -1,15 +1,15 @@
 package io.fcmchannel.sdk.chat;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.fcmchannel.sdk.FcmClient;
-import io.fcmchannel.sdk.UiConfiguration;
 import io.fcmchannel.sdk.chat.metadata.OnMetadataItemClickListener;
 import io.fcmchannel.sdk.core.models.Message;
+import io.fcmchannel.sdk.ui.ChatUiConfiguration;
 
 /**
  * Created by johncordeiro on 7/21/15.
@@ -18,27 +18,30 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private static final int VIEW_TYPE_TEXT_MESSAGES = 1;
 
+    private ChatUiConfiguration chatUiConfiguration;
     private List<Message> chatMessages;
-    private final int iconResource;
 
     private ChatMessageViewHolder.OnChatMessageSelectedListener onChatMessageSelectedListener;
     private final OnMetadataItemClickListener onMetadataItemClickListener;
 
-    ChatMessagesAdapter(OnMetadataItemClickListener onMetadataItemClickListener) {
+    ChatMessagesAdapter(
+            ChatUiConfiguration chatUiConfiguration,
+            OnMetadataItemClickListener onMetadataItemClickListener
+    ) {
+        this.chatUiConfiguration = chatUiConfiguration;
         this.onMetadataItemClickListener = onMetadataItemClickListener;
         this.chatMessages = new ArrayList<>();
-        this.iconResource = FcmClient.getUiConfiguration().getIconResource() != UiConfiguration.INVALID_VALUE ?
-                FcmClient.getUiConfiguration().getIconResource() : FcmClient.getAppIcon();
         setHasStableIds(true);
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ChatMessageViewHolder(parent.getContext(), parent, iconResource);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new ChatMessageViewHolder(parent.getContext(), parent, chatUiConfiguration);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ChatMessageViewHolder chatMessageViewHolder = ((ChatMessageViewHolder) holder);
         chatMessageViewHolder.setOnChatMessageSelectedListener(onChatMessageSelectedListener);
         chatMessageViewHolder.setOnMetadataItemClickListener(onMetadataItemClickListener);
@@ -103,4 +106,5 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public void setOnChatMessageSelectedListener(ChatMessageViewHolder.OnChatMessageSelectedListener onChatMessageSelectedListener) {
         this.onChatMessageSelectedListener = onChatMessageSelectedListener;
     }
+
 }

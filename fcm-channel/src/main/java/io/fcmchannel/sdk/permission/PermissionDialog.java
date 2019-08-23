@@ -5,8 +5,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import androidx.annotation.NonNull;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -44,7 +44,7 @@ public class PermissionDialog extends Dialog {
         }
 
         ImageView permissionIcon = (ImageView) findViewById(R.id.fcm_client_tab_view).findViewById(R.id.icon);
-        int iconFloatingChat = FcmClient.getUiConfiguration().getIconFloatingChat();
+        int iconFloatingChat = FcmClient.getUiConfiguration().getFloatingChatIcon();
         RoundedBitmapDrawable roundedBitmap = BitmapHelper.getRoundedBitmap(getContext(), iconFloatingChat, getRadius());
         permissionIcon.setImageDrawable(roundedBitmap);
 

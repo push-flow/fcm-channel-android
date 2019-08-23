@@ -9,8 +9,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
 import java.util.Collections;
@@ -25,6 +25,7 @@ import io.fcmchannel.sdk.listeners.SendMessageListener;
 import io.fcmchannel.sdk.permission.PermissionDialog;
 import io.fcmchannel.sdk.persistence.Preferences;
 import io.fcmchannel.sdk.services.FcmClientRegistrationIntentService;
+import io.fcmchannel.sdk.ui.UiConfiguration;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;

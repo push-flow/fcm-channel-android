@@ -1,10 +1,10 @@
 package io.fcmchannel.sdk.chat.menu;
 
 import android.content.Context;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -39,7 +39,7 @@ class FcmClientMenu extends HoverMenu {
         fcmClientContent = new FcmClientContent(context);
         this.badgeCount = badgeCount;
 
-        int iconResource = FcmClient.getUiConfiguration().getIconFloatingChat();
+        int iconResource = FcmClient.getUiConfiguration().getFloatingChatIcon();
         mChatSection = new Section(
                 new SectionId(ID_CHAT_SECTION),
                 createTabView(iconResource),
