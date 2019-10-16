@@ -17,6 +17,7 @@ import io.fcmchannel.sdk.ui.ChatUiConfiguration;
 class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int VIEW_TYPE_TEXT_MESSAGES = 1;
+    private static final int VIEW_TYPE_LOADING = 2;
 
     private ChatUiConfiguration chatUiConfiguration;
     private List<Message> chatMessages;
@@ -37,11 +38,17 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ChatMessageViewHolder(parent.getContext(), parent, chatUiConfiguration);
+        if (viewType == VIEW_TYPE_TEXT_MESSAGES) {
+            return new ChatMessageViewHolder(parent, chatUiConfiguration);
+        } else {
+            return new LoadingViewHolder(parent);
+        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if (chatMessages.get(position) == null) return;
+
         ChatMessageViewHolder chatMessageViewHolder = ((ChatMessageViewHolder) holder);
         chatMessageViewHolder.setOnChatMessageSelectedListener(onChatMessageSelectedListener);
         chatMessageViewHolder.setOnMetadataItemClickListener(onMetadataItemClickListener);
@@ -55,7 +62,11 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        return VIEW_TYPE_TEXT_MESSAGES;
+        if (chatMessages.get(position) != null) {
+            return VIEW_TYPE_TEXT_MESSAGES;
+        } else {
+            return VIEW_TYPE_LOADING;
+        }
     }
 
     @Override
@@ -78,9 +89,16 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return chatMessages.isEmpty() ? null : chatMessages.get(0);
     }
 
-    void setMessages(List<Message> messages) {
-        this.chatMessages = messages;
-        notifyDataSetChanged();
+    void addMessages(List<Message> messages) {
+        if (isListLoadingItemEnabled()) {
+            dismissLoading();
+        }
+        this.chatMessages.addAll(messages);
+        notifyItemRangeInserted(chatMessages.size() - messages.size(), messages.size());
+
+        if (isListLoadingItemEnabled() && !messages.isEmpty()) {
+            showLoading();
+        }
     }
 
     void addChatMessage(Message message) {
@@ -105,6 +123,22 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public void setOnChatMessageSelectedListener(ChatMessageViewHolder.OnChatMessageSelectedListener onChatMessageSelectedListener) {
         this.onChatMessageSelectedListener = onChatMessageSelectedListener;
+    }
+
+    private boolean isListLoadingItemEnabled() {
+        return chatUiConfiguration.getMessagesPageSize() > 0;
+    }
+
+    public void showLoading() {
+        if (chatMessages.isEmpty() || chatMessages.get(chatMessages.size() - 1) != null) {
+            chatMessages.add(null);
+        }
+    }
+
+    public void dismissLoading() {
+        if (!chatMessages.isEmpty() && chatMessages.get(chatMessages.size() - 1) == null) {
+            chatMessages.remove(chatMessages.size() - 1);
+        }
     }
 
 }

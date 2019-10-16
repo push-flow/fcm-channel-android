@@ -26,6 +26,8 @@ public class ChatUiConfiguration {
     private int chatBackground = INVALID_VALUE;
     private int chatBackgroundImage = INVALID_VALUE;
 
+    private int messagesPageSize = INVALID_VALUE;
+
     @DrawableRes
     public int getSentMessageBackground() {
         return sentMessageBackground;
@@ -181,6 +183,15 @@ public class ChatUiConfiguration {
 
     public ChatUiConfiguration setChatBackgroundImage(@DrawableRes int chatBackgroundImage) {
         this.chatBackgroundImage = chatBackgroundImage;
+        return this;
+    }
+
+    public int getMessagesPageSize() {
+        return messagesPageSize;
+    }
+
+    public ChatUiConfiguration setMessagesPageSize(int messagesPageSize) {
+        this.messagesPageSize = messagesPageSize;
         return this;
     }
 

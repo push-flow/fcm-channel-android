@@ -58,9 +58,9 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
     private final int rightMarginIncoming;
     private final int rightMarginOutgoing;
 
-    ChatMessageViewHolder(Context context, ViewGroup parent, ChatUiConfiguration chatUiConfiguration) {
-        super(LayoutInflater.from(context).inflate(R.layout.fcm_client_item_chat_message, parent, false));
-        this.context = context;
+    ChatMessageViewHolder(ViewGroup parent, ChatUiConfiguration chatUiConfiguration) {
+        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.fcm_client_item_chat_message, parent, false));
+        this.context = parent.getContext();
         this.chatUiConfiguration = chatUiConfiguration;
         this.hourFormatter = DateFormat.getTimeInstance(DateFormat.SHORT);
         this.parent = itemView.findViewById(R.id.bubble);

@@ -188,7 +188,7 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
 
     @Override
     public void onMessagesLoaded(List<Message> messages) {
-        adapter.setMessages(messages);
+        adapter.addMessages(messages);
         onLastMessageChanged();
     }
 
