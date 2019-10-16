@@ -42,7 +42,7 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (viewType == VIEW_TYPE_TEXT_MESSAGES) {
             return new ChatMessageViewHolder(parent, chatUiConfiguration);
         } else {
-            return new LoadingViewHolder(parent);
+            return new LoadingViewHolder(parent, chatUiConfiguration);
         }
     }
 

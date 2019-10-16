@@ -47,7 +47,6 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
     private ChatUiConfiguration chatUiConfiguration;
     private EditText message;
     private RecyclerView messageList;
-    private ProgressBar progressBar;
 
     private ChatMessagesAdapter adapter;
     private FcmClientChatPresenter presenter;
@@ -71,12 +70,17 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupView(view);
+        presenter = chatUiConfiguration.messagesPagingEnabled()
+                ? new FcmClientChatPresenter(this, chatUiConfiguration.getMessagesPageSize())
+                : new FcmClientChatPresenter(this);
 
-        if (chatUiConfiguration.getMessagesPageSize() > 0) {
-            presenter = new FcmClientChatPresenter(this, chatUiConfiguration.getMessagesPageSize());
+        if (FcmClient.isContactRegistered()) loadMessages();
+    }
+
+    private void loadMessages() {
+        if (chatUiConfiguration.messagesPagingEnabled()) {
             presenter.loadMessagesPaginated();
         } else {
-            presenter = new FcmClientChatPresenter(this);
             presenter.loadMessages();
         }
     }
@@ -115,8 +119,9 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
 
         message = view.findViewById(R.id.message);
         adapter = new ChatMessagesAdapter(chatUiConfiguration, onMetadataItemClickListener);
+        adapter.showLoading();
 
-        if (chatUiConfiguration.getMessagesPageSize() > 0) {
+        if (chatUiConfiguration.messagesPagingEnabled()) {
             adapter.setOnDemandListener(onDemandListener);
         }
         messageList = view.findViewById(R.id.messageList);
@@ -136,8 +141,6 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         if (sendMessageIconColor != INVALID_VALUE) {
             sendMessage.setColorFilter(sendMessageIconColor, PorterDuff.Mode.SRC_IN);
         }
-
-        progressBar = view.findViewById(R.id.progressBar);
     }
 
     private void setupChatBackground(ImageView imageView) {
@@ -207,12 +210,12 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
 
     @Override
     public void showLoading() {
-        progressBar.setVisibility(View.VISIBLE);
+        adapter.showLoading();
     }
 
     @Override
     public void dismissLoading() {
-        progressBar.setVisibility(View.GONE);
+        adapter.dismissLoading();
     }
 
     @Override
@@ -266,7 +269,7 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
     private BroadcastReceiver onRegisteredReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            presenter.loadMessages();
+            loadMessages();
         }
     };
 

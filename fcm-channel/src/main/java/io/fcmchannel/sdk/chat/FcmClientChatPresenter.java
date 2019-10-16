@@ -123,10 +123,11 @@ class FcmClientChatPresenter {
             @Override
             public void onResponse(Call<ApiResponse<Message>> call, Response<ApiResponse<Message>> response) {
                 if (response.isSuccessful()) {
+                    onMessagesLoaded(response.body().getResults());
                     String next = response.body().getNext();
+
                     if (next != null) {
                         setNextPageCursor(next);
-                        onMessagesLoaded(response.body().getResults());
                     } else {
                         allMessagesWereLoaded = true;
                         onMessagesLoaded(Collections.<Message>emptyList());
@@ -147,7 +148,7 @@ class FcmClientChatPresenter {
     }
 
     private void setNextPageCursor(String nextPageUrl) {
-        String cursorQuery = "&cursor=";
+        String cursorQuery = "cursor=";
         int startIndex = nextPageUrl.indexOf(cursorQuery) + cursorQuery.length();
         int endIndex = nextPageUrl.indexOf("&", startIndex);
         endIndex = endIndex == -1 ? nextPageUrl.length() : endIndex;
