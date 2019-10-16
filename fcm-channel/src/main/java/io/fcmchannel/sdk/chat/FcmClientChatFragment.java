@@ -72,8 +72,13 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         super.onViewCreated(view, savedInstanceState);
         setupView(view);
 
-        presenter = new FcmClientChatPresenter(this);
-        presenter.loadMessages();
+        if (chatUiConfiguration.getMessagesPageSize() > 0) {
+            presenter = new FcmClientChatPresenter(this, chatUiConfiguration.getMessagesPageSize());
+            presenter.loadMessagesPaginated();
+        } else {
+            presenter = new FcmClientChatPresenter(this);
+            presenter.loadMessages();
+        }
     }
 
     private void cleanUnreadMessages() {
@@ -111,6 +116,9 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         message = view.findViewById(R.id.message);
         adapter = new ChatMessagesAdapter(chatUiConfiguration, onMetadataItemClickListener);
 
+        if (chatUiConfiguration.getMessagesPageSize() > 0) {
+            adapter.setOnDemandListener(onDemandListener);
+        }
         messageList = view.findViewById(R.id.messageList);
         messageList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true));
 
@@ -189,7 +197,6 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
     @Override
     public void onMessagesLoaded(List<Message> messages) {
         adapter.addMessages(messages);
-        onLastMessageChanged();
     }
 
     @Override
@@ -272,6 +279,12 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         @Override
         public void onClickUrlButton(String url) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        }
+    };
+    private OnDemandListener onDemandListener = new OnDemandListener() {
+        @Override
+        public void onLoadMore() {
+            presenter.loadMessagesPaginated();
         }
     };
 }

@@ -94,4 +94,8 @@ public class RestServices {
         return rapidProApi.listMessages(token, contactUuid);
     }
 
+    public Call<ApiResponse<Message>> loadMessages(String contactUuid, String cursor, int count) {
+        return rapidProApi.listMessages(token, contactUuid, cursor, count);
+    }
+
 }

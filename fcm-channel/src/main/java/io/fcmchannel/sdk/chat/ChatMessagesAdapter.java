@@ -24,6 +24,7 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private ChatMessageViewHolder.OnChatMessageSelectedListener onChatMessageSelectedListener;
     private final OnMetadataItemClickListener onMetadataItemClickListener;
+    private OnDemandListener onDemandListener;
 
     ChatMessagesAdapter(
             ChatUiConfiguration chatUiConfiguration,
@@ -47,8 +48,12 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (chatMessages.get(position) == null) return;
-
+        if (position == chatMessages.size() - 1 && onDemandListener != null) {
+            onDemandListener.onLoadMore();
+        }
+        if (chatMessages.get(position) == null) {
+            return;
+        }
         ChatMessageViewHolder chatMessageViewHolder = ((ChatMessageViewHolder) holder);
         chatMessageViewHolder.setOnChatMessageSelectedListener(onChatMessageSelectedListener);
         chatMessageViewHolder.setOnMetadataItemClickListener(onMetadataItemClickListener);
@@ -121,6 +126,10 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
+    public void setOnDemandListener(OnDemandListener onDemandListener) {
+        this.onDemandListener = onDemandListener;
+    }
+
     public void setOnChatMessageSelectedListener(ChatMessageViewHolder.OnChatMessageSelectedListener onChatMessageSelectedListener) {
         this.onChatMessageSelectedListener = onChatMessageSelectedListener;
     }
@@ -132,12 +141,14 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public void showLoading() {
         if (chatMessages.isEmpty() || chatMessages.get(chatMessages.size() - 1) != null) {
             chatMessages.add(null);
+            notifyItemInserted(chatMessages.size() - 1);
         }
     }
 
     public void dismissLoading() {
         if (!chatMessages.isEmpty() && chatMessages.get(chatMessages.size() - 1) == null) {
             chatMessages.remove(chatMessages.size() - 1);
+            notifyItemRemoved(chatMessages.size());
         }
     }
 
