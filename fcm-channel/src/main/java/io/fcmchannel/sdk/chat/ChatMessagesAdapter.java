@@ -1,8 +1,9 @@
 package io.fcmchannel.sdk.chat;
 
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,15 +96,11 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     void addMessages(List<Message> messages) {
-        if (isListLoadingItemEnabled()) {
-            dismissLoading();
-        }
+        dismissLoading();
         this.chatMessages.addAll(messages);
         notifyItemRangeInserted(chatMessages.size() - messages.size(), messages.size());
 
-        if (isListLoadingItemEnabled() && !messages.isEmpty()) {
-            showLoading();
-        }
+        if (!messages.isEmpty()) showLoading();
     }
 
     void addChatMessage(Message message) {
@@ -132,10 +129,6 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public void setOnChatMessageSelectedListener(ChatMessageViewHolder.OnChatMessageSelectedListener onChatMessageSelectedListener) {
         this.onChatMessageSelectedListener = onChatMessageSelectedListener;
-    }
-
-    private boolean isListLoadingItemEnabled() {
-        return chatUiConfiguration.getMessagesPageSize() > 0;
     }
 
     public void showLoading() {

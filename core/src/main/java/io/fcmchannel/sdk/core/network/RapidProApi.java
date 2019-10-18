@@ -1,11 +1,12 @@
 package io.fcmchannel.sdk.core.network;
 
+import io.fcmchannel.sdk.core.models.Contact;
 import io.fcmchannel.sdk.core.models.Message;
 import io.fcmchannel.sdk.core.models.network.ApiResponse;
 import io.fcmchannel.sdk.core.models.network.FcmRegistrationResponse;
-import io.fcmchannel.sdk.core.models.Contact;
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import okhttp3.ResponseBody;
-import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -22,7 +23,7 @@ public interface RapidProApi {
 
     @FormUrlEncoded
     @POST("c/fcm/{channel}/register")
-    Call<FcmRegistrationResponse> registerFcmContact(
+    Single<FcmRegistrationResponse> registerFcmContact(
             @Path("channel") String channel,
             @Field("urn") String urn,
             @Field("fcm_token") String fcmToken,
@@ -31,7 +32,7 @@ public interface RapidProApi {
 
     @FormUrlEncoded
     @POST("c/fcm/{channel}/receive")
-    Call<ResponseBody> sendReceivedMessage(
+    Completable sendReceivedMessage(
             @Path("channel") String channel,
             @Field("from") String from,
             @Field("fcm_token") String fcmToken,
@@ -39,13 +40,13 @@ public interface RapidProApi {
     );
 
     @GET("api/v2/messages.json")
-    Call<ApiResponse<Message>> listMessages(
+    Single<ApiResponse<Message>> listMessages(
             @Header("Authorization") String token,
             @Query("contact") String contactUuid
     );
 
     @GET("api/v2/messages.json")
-    Call<ApiResponse<Message>> listMessages(
+    Single<ApiResponse<Message>> listMessages(
             @Header("Authorization") String token,
             @Query("contact") String contactUuid,
             @Query("cursor") String cursor,
@@ -53,13 +54,13 @@ public interface RapidProApi {
     );
 
     @GET("api/v2/contacts.json")
-    Call<ApiResponse<Contact>> loadContact(
+    Single<ApiResponse<Contact>> loadContact(
             @Header("Authorization") String token,
             @Query("urn") String urn
     );
 
     @POST("api/v2/contacts.json")
-    Call<Contact> saveContact(
+    Single<Contact> saveContact(
             @Header("Authorization") String token,
             @Query("uuid") String contactUuid,
             @Body Contact contact

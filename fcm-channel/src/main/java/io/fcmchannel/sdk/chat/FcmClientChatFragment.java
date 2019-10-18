@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -81,7 +80,7 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         if (chatUiConfiguration.messagesPagingEnabled()) {
             presenter.loadMessagesPaginated();
         } else {
-            presenter.loadMessages();
+            presenter.loadAllMessages();
         }
     }
 
@@ -165,7 +164,7 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         if (context != null) {
             LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
 
-            IntentFilter registrationFilter = new IntentFilter(FcmClientRegistrationIntentService.REGISTRATION_COMPLETE);
+            IntentFilter registrationFilter = new IntentFilter(FcmClientRegistrationIntentService.ACTION_REGISTRATION_COMPLETE);
             localBroadcastManager.registerReceiver(onRegisteredReceiver, registrationFilter);
 
             IntentFilter messagesBroadcastFilter = new IntentFilter(FcmClientIntentService.ACTION_MESSAGE_RECEIVED);
