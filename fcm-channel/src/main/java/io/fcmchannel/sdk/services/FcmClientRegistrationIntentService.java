@@ -17,6 +17,7 @@ import io.fcmchannel.sdk.core.models.Contact;
 import io.fcmchannel.sdk.core.models.network.FcmRegistrationResponse;
 import io.fcmchannel.sdk.core.network.RestServices;
 import io.reactivex.Single;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
@@ -33,10 +34,11 @@ public class FcmClientRegistrationIntentService extends IntentService {
     public static final String EXTRA_URN = "urn";
     public static final String EXTRA_CONTACT_UUID = "contactUuid";
 
-    private Disposable disposable;
+    protected final CompositeDisposable disposables;
 
     public FcmClientRegistrationIntentService() {
         super(TAG);
+        disposables = new CompositeDisposable();
     }
 
     @Override
@@ -44,7 +46,7 @@ public class FcmClientRegistrationIntentService extends IntentService {
         final String urn = intent.getStringExtra(EXTRA_URN);
         final String contactUuid = intent.getStringExtra(EXTRA_CONTACT_UUID);
 
-        disposable = registerContact(urn, contactUuid)
+        final Disposable disposable = registerContact(urn, contactUuid)
             .doFinally(new Action() {
                 @Override
                 public void run() {
@@ -68,11 +70,13 @@ public class FcmClientRegistrationIntentService extends IntentService {
                     }
                 }
             );
+
+        disposables.add(disposable);
     }
 
     @Override
     public void onDestroy() {
-        disposable.dispose();
+        disposables.clear();
         super.onDestroy();
     }
 
