@@ -76,6 +76,12 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         if (FcmClient.isContactRegistered()) loadMessages();
     }
 
+    @Override
+    public void onDestroy() {
+        presenter.detachView();
+        super.onDestroy();
+    }
+
     private void loadMessages() {
         if (chatUiConfiguration.messagesPagingEnabled()) {
             presenter.loadMessagesPaginated();

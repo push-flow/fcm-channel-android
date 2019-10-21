@@ -3,6 +3,7 @@ package io.fcmchannel.sdk.chat;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -31,7 +32,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 class FcmClientChatPresenter {
 
-    private final FcmClientChatView view;
+    private final WeakReference<FcmClientChatView> viewReference;
     private final RestServices services;
     private final CompositeDisposable disposables;
 
@@ -42,7 +43,7 @@ class FcmClientChatPresenter {
     private boolean allMessagesWereLoaded;
 
     FcmClientChatPresenter(FcmClientChatView view) {
-        this.view = view;
+        this.viewReference = new WeakReference<>(view);
         this.services = new RestServices(FcmClient.getHost(), FcmClient.getToken());
         this.disposables = new CompositeDisposable();
     }
@@ -50,6 +51,14 @@ class FcmClientChatPresenter {
     FcmClientChatPresenter(FcmClientChatView view, int messagesPageSize) {
         this(view);
         this.messagesPageSize = messagesPageSize;
+    }
+
+    void detachView() {
+        viewReference.clear();
+    }
+
+    FcmClientChatView getView() {
+        return viewReference.get();
     }
 
     void loadAllMessages() {
@@ -143,13 +152,13 @@ class FcmClientChatPresenter {
     }
 
     void onRequestFailed() {
-        view.showMessage(R.string.fcm_client_error_load_messages);
+        getView().showMessage(R.string.fcm_client_error_load_messages);
     }
 
     void loadMessage(Bundle data) {
         final Message message = BundleHelper.getMessage(data);
         message.setCreatedOn(new Date());
-        view.onMessageLoaded(message);
+        getView().onMessageLoaded(message);
     }
 
     Message createChatMessage(String messageText) {
@@ -164,7 +173,7 @@ class FcmClientChatPresenter {
     }
 
     void sendMessage(String messageText) {
-        view.addNewMessage(messageText);
+        getView().addNewMessage(messageText);
         FcmClient.sendMessage(messageText);
     }
 
@@ -195,11 +204,11 @@ class FcmClientChatPresenter {
     }
 
     private void onMessagesLoaded(List<Message> messages) {
-        view.onMessagesLoaded(messages);
+        getView().onMessagesLoaded(messages);
     }
 
     private void setId(Message chatMessage) {
-        final Message lastMessage = view.getLastMessage();
+        final Message lastMessage = getView().getLastMessage();
 
         if (lastMessage != null) {
             chatMessage.setId(lastMessage.getId() + 1);

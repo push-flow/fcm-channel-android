@@ -16,8 +16,8 @@ import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.core.models.Contact;
 import io.fcmchannel.sdk.core.models.network.FcmRegistrationResponse;
 import io.fcmchannel.sdk.core.network.RestServices;
-import io.fcmchannel.sdk.persistence.Preferences;
 import io.reactivex.Single;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -33,6 +33,8 @@ public class FcmClientRegistrationIntentService extends IntentService {
     public static final String EXTRA_URN = "urn";
     public static final String EXTRA_CONTACT_UUID = "contactUuid";
 
+    private Disposable disposable;
+
     public FcmClientRegistrationIntentService() {
         super(TAG);
     }
@@ -42,7 +44,7 @@ public class FcmClientRegistrationIntentService extends IntentService {
         final String urn = intent.getStringExtra(EXTRA_URN);
         final String contactUuid = intent.getStringExtra(EXTRA_CONTACT_UUID);
 
-        registerContact(urn, contactUuid)
+        disposable = registerContact(urn, contactUuid)
             .doFinally(new Action() {
                 @Override
                 public void run() {
@@ -68,6 +70,12 @@ public class FcmClientRegistrationIntentService extends IntentService {
             );
     }
 
+    @Override
+    public void onDestroy() {
+        disposable.dispose();
+        super.onDestroy();
+    }
+
     protected void onFcmRegistered(String pushIdentity, Contact contact) { }
 
     private Single<Pair<String, Contact>> registerContact(final String urn, final String contactUuid) {
@@ -83,14 +91,21 @@ public class FcmClientRegistrationIntentService extends IntentService {
                 fcmToken,
                 contactUuid
             )
+            .doOnSubscribe(new Consumer<Disposable>() {
+                @Override
+                public void accept(Disposable disposable) {
+                    FcmClient.getPreferences()
+                        .setFcmToken(fcmToken)
+                        .setUrn(urn)
+                        .commit();
+                }
+            })
             .doOnSuccess(new Consumer<FcmRegistrationResponse>() {
                 @Override
                 public void accept(FcmRegistrationResponse response) {
-                    final Preferences preferences = FcmClient.getPreferences();
-                    preferences.setContactUuid(response.getContactUuid());
-                    preferences.setFcmToken(fcmToken);
-                    preferences.setUrn(urn);
-                    preferences.commit();
+                    FcmClient.getPreferences()
+                        .setContactUuid(response.getContactUuid())
+                        .commit();
                 }
             })
             .map(new Function<FcmRegistrationResponse, Contact>() {
