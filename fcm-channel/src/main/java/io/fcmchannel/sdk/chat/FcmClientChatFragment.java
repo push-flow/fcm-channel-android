@@ -73,7 +73,7 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
                 ? new FcmClientChatPresenter(this, chatUiConfiguration.getMessagesPageSize())
                 : new FcmClientChatPresenter(this);
 
-        if (FcmClient.isContactRegistered()) loadMessages();
+        loadMessages();
     }
 
     @Override
@@ -170,9 +170,6 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         if (context != null) {
             LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
 
-            IntentFilter registrationFilter = new IntentFilter(FcmClientRegistrationIntentService.ACTION_REGISTRATION_COMPLETE);
-            localBroadcastManager.registerReceiver(onRegisteredReceiver, registrationFilter);
-
             IntentFilter messagesBroadcastFilter = new IntentFilter(FcmClientIntentService.ACTION_MESSAGE_RECEIVED);
             localBroadcastManager.registerReceiver(messagesReceiver, messagesBroadcastFilter);
         }
@@ -188,7 +185,6 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         try {
             LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
             localBroadcastManager.unregisterReceiver(messagesReceiver);
-            localBroadcastManager.unregisterReceiver(onRegisteredReceiver);
         } catch (Exception exception) {
             Log.e("FcmClientChat", "onStop: ", exception);
         }
@@ -270,13 +266,6 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         message.setError(null);
         message.setText(null);
     }
-
-    private BroadcastReceiver onRegisteredReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            loadMessages();
-        }
-    };
 
     private OnMetadataItemClickListener onMetadataItemClickListener = new OnMetadataItemClickListener() {
         @Override
