@@ -3,6 +3,7 @@ package io.fcmchannel.sdk.chat;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -25,23 +26,47 @@ class FcmClientChatPresenter {
     private final FcmClientChatView view;
     private final RestServices services;
 
+    private String nextPageCursor;
+    private int messagesPageSize;
+
+    private boolean isLoadingMessages;
+    private boolean allMessagesWereLoaded;
+
     FcmClientChatPresenter(FcmClientChatView view) {
         this.view = view;
         this.services = new RestServices(FcmClient.getHost(), FcmClient.getToken());
+    }
+
+    FcmClientChatPresenter(FcmClientChatView view, int messagesPageSize) {
+        this(view);
+        this.messagesPageSize = messagesPageSize;
     }
 
     void loadMessages() {
         if (FcmClient.isContactRegistered()) {
             String contactUuid = FcmClient.getContact().getUuid();
             if (!TextUtils.isEmpty(contactUuid)) {
-                loadMessagesWithContact(contactUuid);
+                loadMessages(contactUuid);
             } else {
-                loadContact();
+                loadContact(false);
             }
         }
     }
 
-    private void loadContact() {
+    void loadMessagesPaginated() {
+        if (isLoadingMessages || allMessagesWereLoaded) return;
+
+        if (FcmClient.isContactRegistered()) {
+            String contactUuid = FcmClient.getContact().getUuid();
+            if (!TextUtils.isEmpty(contactUuid)) {
+                loadMessagesPaginated(contactUuid);
+            } else {
+                loadContact(true);
+            }
+        }
+    }
+
+    private void loadContact(final boolean pagedLoading) {
         view.showLoading();
 
         String urn = FcmClient.URN_PREFIX_FCM + FcmClient.getPreferences().getUrn();
@@ -49,9 +74,15 @@ class FcmClientChatPresenter {
             @Override
             public void onResponse(Call<ApiResponse<Contact>> call, Response<ApiResponse<Contact>> response) {
                 view.dismissLoading();
+
                 if (response.isSuccessful() && response.body() != null && response.body().getResults() != null) {
                     Contact contact = response.body().getResults().get(0);
-                    loadMessagesWithContact(contact.getUuid());
+
+                    if (pagedLoading) {
+                        loadMessagesPaginated(contact.getUuid());
+                    } else {
+                        loadMessages(contact.getUuid());
+                    }
                 } else {
                     view.showMessage(R.string.fcm_client_error_load_messages);
                 }
@@ -64,7 +95,7 @@ class FcmClientChatPresenter {
         view.showMessage(R.string.fcm_client_error_load_messages);
     }
 
-    private void loadMessagesWithContact(String contactUuid) {
+    private void loadMessages(String contactUuid) {
         view.showLoading();
         services.loadMessages(contactUuid).enqueue(new Callback<ApiResponse<Message>>() {
             @Override
@@ -83,6 +114,45 @@ class FcmClientChatPresenter {
                 onRequestFailed();
             }
         });
+    }
+
+    private void loadMessagesPaginated(String contactUuid) {
+        isLoadingMessages = true;
+
+        services.loadMessages(contactUuid, nextPageCursor, messagesPageSize).enqueue(new Callback<ApiResponse<Message>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Message>> call, Response<ApiResponse<Message>> response) {
+                if (response.isSuccessful()) {
+                    onMessagesLoaded(response.body().getResults());
+                    String next = response.body().getNext();
+
+                    if (next != null) {
+                        setNextPageCursor(next);
+                    } else {
+                        allMessagesWereLoaded = true;
+                        onMessagesLoaded(Collections.<Message>emptyList());
+                    }
+                } else {
+                    view.showMessage(R.string.fcm_client_error_load_messages);
+                }
+                isLoadingMessages = false;
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<Message>> call, Throwable throwable) {
+                throwable.printStackTrace();
+                onRequestFailed();
+                isLoadingMessages = false;
+            }
+        });
+    }
+
+    private void setNextPageCursor(String nextPageUrl) {
+        String cursorQuery = "cursor=";
+        int startIndex = nextPageUrl.indexOf(cursorQuery) + cursorQuery.length();
+        int endIndex = nextPageUrl.indexOf("&", startIndex);
+        endIndex = endIndex == -1 ? nextPageUrl.length() : endIndex;
+        nextPageCursor = nextPageUrl.substring(startIndex, endIndex);
     }
 
     private void onMessagesLoaded(List<Message> messages) {
