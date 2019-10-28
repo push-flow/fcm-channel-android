@@ -8,12 +8,6 @@ import android.content.IntentFilter;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
 import android.util.TypedValue;
@@ -25,14 +19,27 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
+import br.com.ilhasoft.support.recyclerview.adapters.AutoRecyclerAdapter;
+import br.com.ilhasoft.support.recyclerview.adapters.OnCreateViewHolder;
 import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.R;
 import io.fcmchannel.sdk.chat.metadata.OnMetadataItemClickListener;
+import io.fcmchannel.sdk.chat.viewholder.ChatViewHolder;
+import io.fcmchannel.sdk.chat.viewholder.LoadingViewHolder;
+import io.fcmchannel.sdk.chat.viewholder.MessageViewHolder;
 import io.fcmchannel.sdk.core.models.Message;
+import io.fcmchannel.sdk.databinding.FcmClientItemChatMessageBinding;
+import io.fcmchannel.sdk.databinding.FcmClientItemLoadingBinding;
 import io.fcmchannel.sdk.services.FcmClientIntentService;
-import io.fcmchannel.sdk.services.FcmClientRegistrationIntentService;
 import io.fcmchannel.sdk.ui.ChatUiConfiguration;
 import io.fcmchannel.sdk.util.SpaceItemDecoration;
 
@@ -43,18 +50,25 @@ import static io.fcmchannel.sdk.ui.UiConfiguration.INVALID_VALUE;
  */
 public class FcmClientChatFragment extends Fragment implements FcmClientChatView {
 
-    private ChatUiConfiguration chatUiConfiguration;
-    private EditText message;
-    private RecyclerView messageList;
+    private static final int VIEW_TYPE_MESSAGE = 0;
+    private static final int VIEW_TYPE_LOADING = 1;
 
-    private ChatMessagesAdapter adapter;
+    private ChatUiConfiguration chatUiConfiguration = FcmClient.getUiConfiguration().getChatUiConfiguration();
+    private EditText message;
+    private RecyclerView messagesList;
+
+    private AutoRecyclerAdapter<Message, ChatViewHolder> messagesAdapter;
     private FcmClientChatPresenter presenter;
 
     public static boolean visible = false;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+        @NonNull LayoutInflater inflater,
+        @Nullable ViewGroup container,
+        @Nullable Bundle savedInstanceState
+    ) {
         cleanUnreadMessages();
         return inflater.inflate(R.layout.fcm_client_fragment_chat, container, false);
     }
@@ -69,8 +83,8 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupView(view);
-        presenter = chatUiConfiguration.messagesPagingEnabled()
-                ? new FcmClientChatPresenter(this, chatUiConfiguration.getMessagesPageSize())
+        presenter = chatUiConfiguration.messagePagingEnabled()
+                ? new FcmClientChatPresenter(this, chatUiConfiguration.getMessagePageSize())
                 : new FcmClientChatPresenter(this);
 
         loadMessages();
@@ -82,22 +96,22 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         super.onDestroy();
     }
 
-    private void loadMessages() {
-        if (chatUiConfiguration.messagesPagingEnabled()) {
-            presenter.loadMessagesPaginated();
-        } else {
-            presenter.loadAllMessages();
-        }
-    }
-
-    private void cleanUnreadMessages() {
-        FcmClient.getPreferences().setUnreadMessages(0).commit();
+    @Override
+    public void onStart() {
+        super.onStart();
+        registerBroadcasts(getContext());
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        visible = isVisibleToUser;
+    public void onStop() {
+        super.onStop();
+        unregisterBroadcasts(getContext());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        visible = true;
     }
 
     @Override
@@ -107,63 +121,118 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        visible = true;
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        visible = isVisibleToUser;
+    }
+
+    @Override
+    public void showLoading() { }
+
+    @Override
+    public void dismissLoading() { }
+
+    @Override
+    public void showMessage(int messageId) {
+        showMessage(requireContext().getString(messageId));
+    }
+
+    @Override
+    public void showMessage(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onMessagesLoaded(List<Message> messages) {
+        dismissListLoading();
+        messagesAdapter.addAll(messages);
+
+        if (!messages.isEmpty()) showLoading();
+    }
+
+    @Override
+    public void onMessageLoaded(Message message) {
+        int position = messagesAdapter.indexOf(message);
+        if (position >= 0) {
+            messagesAdapter.set(position, message);
+        } else {
+            messagesAdapter.add(0, message);
+            messagesAdapter.notifyItemChanged(1);
+        }
+        onLastMessageChanged();
+    }
+
+    @Override
+    public Message getLastMessage() {
+        return messagesAdapter.isEmpty() ? null : messagesAdapter.get(0);
+    }
+
+    @Override
+    public void addNewMessage(String messageText) {
+        restoreView();
+        onMessageLoaded(presenter.createChatMessage(messageText));
+    }
+
+    private void cleanUnreadMessages() {
+        FcmClient.getPreferences().setUnreadMessages(0).commit();
     }
 
     private void setupView(View view) {
-        chatUiConfiguration = FcmClient.getUiConfiguration().getChatUiConfiguration();
-
-        setupChatBackground((ImageView) view.findViewById(R.id.background));
-
         RelativeLayout container = view.findViewById(R.id.container);
         LayoutTransition transition = new LayoutTransition();
         transition.setDuration(500);
         container.setLayoutTransition(transition);
 
         message = view.findViewById(R.id.message);
-        adapter = new ChatMessagesAdapter(chatUiConfiguration, onMetadataItemClickListener);
-        adapter.showLoading();
-
-        if (chatUiConfiguration.messagesPagingEnabled()) {
-            adapter.setOnDemandListener(onDemandListener);
-        }
-        messageList = view.findViewById(R.id.messageList);
-        messageList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true));
-
-        int spaceHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, view.getResources().getDisplayMetrics());
-        SpaceItemDecoration messagesItemDecoration = new SpaceItemDecoration();
-        messagesItemDecoration.setVerticalSpaceHeight(spaceHeight);
-
-        messageList.addItemDecoration(messagesItemDecoration);
-        messageList.setAdapter(adapter);
+        messagesList = view.findViewById(R.id.messageList);
+        setupMessagesList();
 
         ImageView sendMessage = view.findViewById(R.id.sendMessage);
         sendMessage.setOnClickListener(onSendMessageClickListener);
 
-        int sendMessageIconColor = chatUiConfiguration.getSendMessageIconColor();
+        int sendMessageIconColor = chatUiConfiguration.getSendMessageButtonColor();
         if (sendMessageIconColor != INVALID_VALUE) {
             sendMessage.setColorFilter(sendMessageIconColor, PorterDuff.Mode.SRC_IN);
         }
     }
 
-    private void setupChatBackground(ImageView imageView) {
-        int chatBackground = chatUiConfiguration.getChatBackground();
-        int chatBackgroundImage = chatUiConfiguration.getChatBackgroundImage();
+    private void setupMessagesList() {
+        messagesAdapter = new AutoRecyclerAdapter<Message, ChatViewHolder>(onCreateViewHolder) {
+            @Override
+            public int getItemViewType(int position) {
+                if (messagesAdapter.get(position) != null) {
+                    return VIEW_TYPE_MESSAGE;
+                } else {
+                    return VIEW_TYPE_LOADING;
+                }
+            }
+        };
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(
+            getContext(),
+            LinearLayoutManager.VERTICAL,
+            true
+        );
+        SpaceItemDecoration itemDecoration = new SpaceItemDecoration();
+        int spaceHeight = (int) TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            8,
+            getResources().getDisplayMetrics()
+        );
+        itemDecoration.setVerticalSpaceHeight(spaceHeight);
 
-        if (chatBackgroundImage != INVALID_VALUE) {
-            imageView.setBackgroundDrawable(null);
-            imageView.setImageResource(chatBackgroundImage);
-        } else if (chatBackground != INVALID_VALUE) {
-            imageView.setBackgroundResource(chatBackground);
-        }
+        messagesList.setLayoutManager(layoutManager);
+        messagesList.setAdapter(messagesAdapter);
+        messagesList.addItemDecoration(itemDecoration);
+
+        showListLoading();
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        registerBroadcasts(getContext());
+    private void loadMessages() {
+        if (chatUiConfiguration.messagePagingEnabled()) {
+            presenter.loadMessagesPaginated();
+        } else {
+            presenter.loadAllMessages();
+        }
     }
 
     public void registerBroadcasts(Context context) {
@@ -175,18 +244,34 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
         }
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        unregisterBroadcasts(getContext());
-    }
-
     public void unregisterBroadcasts(Context context) {
         try {
             LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
             localBroadcastManager.unregisterReceiver(messagesReceiver);
         } catch (Exception exception) {
             Log.e("FcmClientChat", "onStop: ", exception);
+        }
+    }
+
+    private void onLastMessageChanged() {
+        messagesList.scrollToPosition(0);
+    }
+
+    private void restoreView() {
+        message.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        message.setError(null);
+        message.setText(null);
+    }
+
+    private void showListLoading() {
+        if (messagesAdapter.isEmpty() || messagesAdapter.get(messagesAdapter.size() - 1) != null) {
+            messagesAdapter.add(null);
+        }
+    }
+
+    private void dismissListLoading() {
+        if (!messagesAdapter.isEmpty() && messagesAdapter.get(messagesAdapter.size() - 1) == null) {
+            messagesAdapter.remove(messagesAdapter.size() - 1);
         }
     }
 
@@ -197,45 +282,6 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
             presenter.loadMessage(data);
         }
     };
-
-    @Override
-    public void onMessagesLoaded(List<Message> messages) {
-        adapter.addMessages(messages);
-    }
-
-    @Override
-    public void onMessageLoaded(Message message) {
-        adapter.addChatMessage(message);
-        onLastMessageChanged();
-    }
-
-    @Override
-    public void showLoading() {
-        adapter.showLoading();
-    }
-
-    @Override
-    public void dismissLoading() {
-        adapter.dismissLoading();
-    }
-
-    @Override
-    public void showMessage(int messageId) {
-        Context context = getContext();
-        if (context != null) {
-            showMessage(context.getString(messageId));
-        }
-    }
-
-    @Override
-    public void showMessage(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public Message getLastMessage() {
-        return adapter.getLastMessage();
-    }
 
     private View.OnClickListener onSendMessageClickListener = new View.OnClickListener() {
         @Override
@@ -248,25 +294,26 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
             }
         }
     };
-
-    @Override
-    public void addNewMessage(String messageText) {
-        restoreView();
-
-        adapter.addChatMessage(presenter.createChatMessage(messageText));
-        messageList.scrollToPosition(0);
-    }
-
-    private void onLastMessageChanged() {
-        messageList.scrollToPosition(0);
-    }
-
-    private void restoreView() {
-        message.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-        message.setError(null);
-        message.setText(null);
-    }
-
+    private OnCreateViewHolder<Message, ChatViewHolder> onCreateViewHolder = new OnCreateViewHolder<Message, ChatViewHolder>() {
+        @Override
+        public ChatViewHolder onCreateViewHolder(
+            LayoutInflater layoutInflater,
+            ViewGroup parent,
+            int viewType
+        ) {
+            if (viewType == VIEW_TYPE_MESSAGE) {
+                return new MessageViewHolder(
+                    FcmClientItemChatMessageBinding.inflate(layoutInflater, parent, false),
+                    chatUiConfiguration
+                );
+            } else {
+                return new LoadingViewHolder(
+                    FcmClientItemLoadingBinding.inflate(layoutInflater, parent, false),
+                    chatUiConfiguration
+                );
+            }
+        }
+    };
     private OnMetadataItemClickListener onMetadataItemClickListener = new OnMetadataItemClickListener() {
         @Override
         public void onClickQuickReply(String reply) {

@@ -9,8 +9,15 @@
     <color name="fcm_client_gray_dark_3">#9E9E9E</color>
     <color name="fcm_client_blue">#27a4e7</color>
     <color name="fcm_client_red">#FB2727</color>
-    <color name="fcm_client_black">#212121</color>
 
     <color name="fcm_client_orange">#FFFF9600</color>
     <color name="hover_navigator_color">#ffffff</color>
+
+    <color name="fcm_client_white">@android:color/white</color>
+    <color name="fcm_client_black">@android:color/black</color>
+    <color name="fcm_client_rice_flower">#efffde</color>
+    <color name="fcm_client_chelsea_cucumber">#70b15c</color>
+    <color name="fcm_client_gray_chateau">#a1aab3</color>
+    <color name="fcm_client_picton_blue">#62b0eb</color>
+    <color name="fcm_client_mischka">#cdd7e0</color>
 </resources>

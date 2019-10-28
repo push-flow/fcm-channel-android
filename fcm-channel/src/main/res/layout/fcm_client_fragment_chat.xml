@@ -14,7 +14,7 @@
             android:id="@+id/background"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/fcm_client_gray"
+            android:background="@drawable/fcm_client_bg_chat"
             android:importantForAccessibility="no"
             android:scaleType="centerCrop"
             tools:targetApi="jelly_bean" />

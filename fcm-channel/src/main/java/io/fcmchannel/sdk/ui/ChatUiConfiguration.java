@@ -1,186 +1,175 @@
 package io.fcmchannel.sdk.ui;
 
-import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 
-import io.fcmchannel.sdk.FcmClient;
+import java.text.DateFormat;
 
-import static io.fcmchannel.sdk.ui.UiConfiguration.INVALID_VALUE;
+import io.fcmchannel.sdk.FcmClient;
+import io.fcmchannel.sdk.R;
 
 public class ChatUiConfiguration {
 
+    @ColorRes
+    private int sentMessageBackgroundColor = R.color.fcm_client_rice_flower;
+    @ColorRes
+    private int sentMessageTextColor = R.color.fcm_client_black;
+    @ColorRes
+    private int sentMessageHourTextColor = R.color.fcm_client_chelsea_cucumber;
+    @ColorRes
+    private int receivedMessageBackgroundColor = R.color.fcm_client_white;
+    @ColorRes
+    private int receivedMessageTextColor = R.color.fcm_client_black;
+    @ColorRes
+    private int receivedMessageHourTextColor = R.color.fcm_client_gray_chateau;
     @DrawableRes
-    private int sentMessageBackground = INVALID_VALUE;
-    @DrawableRes
-    private int receivedMessageBackground = INVALID_VALUE;
-    @ColorInt
-    private int sentMessageBackgroundColor = INVALID_VALUE;
-    @ColorInt
-    private int receivedMessageBackgroundColor = INVALID_VALUE;
-    @ColorInt
-    private int sentMessageTextColor = INVALID_VALUE;
-    @ColorInt
-    private int receivedMessageTextColor = INVALID_VALUE;
-    @ColorInt
-    private int sendMessageIconColor = INVALID_VALUE;
-    @ColorInt
-    private int receivedMessageIcon = INVALID_VALUE;
+    private int receivedMessageAvatar = FcmClient.getAppIcon();
 
-    private boolean sentMessageInTopDirection = false;
-    private boolean receivedMessageInTopDirection = false;
+    private DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
+    private boolean sentMessageTopIndicator = false;
+    private boolean receivedMessageTopIndicator = false;
 
-    @ColorInt
-    private int sentMessageHourTextColor = INVALID_VALUE;
-    @ColorInt
-    private int receivedMessageHourTextColor = INVALID_VALUE;
-    @DrawableRes
-    private int metadataBackground = INVALID_VALUE;
-    @DrawableRes
-    private int metadataBackgroundColor = INVALID_VALUE;
-    @DrawableRes
-    private int chatBackground = INVALID_VALUE;
-    @DrawableRes
-    private int chatBackgroundImage = INVALID_VALUE;
+    @ColorRes
+    private int metadataBackgroundColor = R.color.fcm_client_white;
+    @ColorRes
+    private int metadataTextColor = R.color.fcm_client_black;
 
-    private int messagesPageSize = -1;
-    @ColorInt
-    private int messagesLoadingColor = INVALID_VALUE;
+    @ColorRes
+    private int sendMessageButtonColor = R.color.fcm_client_picton_blue;
 
     @DrawableRes
-    public int getSentMessageBackground() {
-        return sentMessageBackground;
-    }
-
-    public ChatUiConfiguration setSentMessageBackground(@DrawableRes int sentMessageBackground) {
-        this.sentMessageBackground = sentMessageBackground;
-        return this;
-    }
-
+    private int chatBackground = R.drawable.fcm_client_bg_chat;
     @DrawableRes
-    public int getReceivedMessageBackground() {
-        return receivedMessageBackground;
-    }
+    private int chatBackgroundImage = 0;
+    @ColorRes
+    private int messageLoadingColor = R.color.fcm_client_gray_light_2;
 
-    public ChatUiConfiguration setReceivedMessageBackground(@DrawableRes int receivedMessageBackground) {
-        this.receivedMessageBackground = receivedMessageBackground;
-        return this;
-    }
+    private int messagePageSize = 0;
 
-    @ColorInt
+    @ColorRes
     public int getSentMessageBackgroundColor() {
         return sentMessageBackgroundColor;
     }
 
-    public ChatUiConfiguration setSentMessageBackgroundColor(@ColorInt int sentMessageBackgroundColor) {
+    public ChatUiConfiguration setSentMessageBackgroundColor(@ColorRes int sentMessageBackgroundColor) {
         this.sentMessageBackgroundColor = sentMessageBackgroundColor;
         return this;
     }
 
-    @ColorInt
+    @ColorRes
     public int getReceivedMessageBackgroundColor() {
         return receivedMessageBackgroundColor;
     }
 
-    public ChatUiConfiguration setReceivedMessageBackgroundColor(@ColorInt int receivedMessageBackgroundColor) {
+    public ChatUiConfiguration setReceivedMessageBackgroundColor(@ColorRes int receivedMessageBackgroundColor) {
         this.receivedMessageBackgroundColor = receivedMessageBackgroundColor;
         return this;
     }
 
-    @ColorInt
+    @ColorRes
     public int getSentMessageTextColor() {
         return sentMessageTextColor;
     }
 
-    public ChatUiConfiguration setSentMessageTextColor(@ColorInt int sentMessageTextColor) {
+    public ChatUiConfiguration setSentMessageTextColor(@ColorRes int sentMessageTextColor) {
         this.sentMessageTextColor = sentMessageTextColor;
         return this;
     }
 
-    @ColorInt
-    public int getReceivedMessageTextColor() {
-        return receivedMessageTextColor;
-    }
-
-    public ChatUiConfiguration setReceivedMessageTextColor(@ColorInt int receivedMessageTextColor) {
-        this.receivedMessageTextColor = receivedMessageTextColor;
-        return this;
-    }
-
-    @ColorInt
-    public int getSendMessageIconColor() {
-        return sendMessageIconColor;
-    }
-
-    public ChatUiConfiguration setSendMessageIconColor(@ColorInt int sendMessageIconColor) {
-        this.sendMessageIconColor = sendMessageIconColor;
-        return this;
-    }
-
-    @DrawableRes
-    public int getReceivedMessageIcon() {
-        return receivedMessageIcon != INVALID_VALUE ? receivedMessageIcon : FcmClient.getAppIcon();
-    }
-
-    public ChatUiConfiguration setReceivedMessageIcon(@DrawableRes int receivedMessageIcon) {
-        this.receivedMessageIcon = receivedMessageIcon;
-        return this;
-    }
-
-    public boolean isReceivedMessageInTopDirection() {
-        return receivedMessageInTopDirection;
-    }
-
-    public ChatUiConfiguration setReceivedMessageInTopDirection(boolean receivedMessageInTopDirection) {
-        this.receivedMessageInTopDirection = receivedMessageInTopDirection;
-        return this;
-    }
-
-    public boolean isSentMessageInTopDirection() {
-        return sentMessageInTopDirection;
-    }
-
-    public ChatUiConfiguration setSentMessageInTopDirection(boolean sentMessageInTopDirection) {
-        this.sentMessageInTopDirection = sentMessageInTopDirection;
-        return this;
-    }
-
-    @ColorInt
+    @ColorRes
     public int getSentMessageHourTextColor() {
         return sentMessageHourTextColor;
     }
 
-    public ChatUiConfiguration setSentMessageHourTextColor(@ColorInt int sentMessageHourTextColor) {
+    public ChatUiConfiguration setSentMessageHourTextColor(@ColorRes int sentMessageHourTextColor) {
         this.sentMessageHourTextColor = sentMessageHourTextColor;
         return this;
     }
 
-    @ColorInt
+    @ColorRes
+    public int getReceivedMessageTextColor() {
+        return receivedMessageTextColor;
+    }
+
+    public ChatUiConfiguration setReceivedMessageTextColor(@ColorRes int receivedMessageTextColor) {
+        this.receivedMessageTextColor = receivedMessageTextColor;
+        return this;
+    }
+
+    @ColorRes
     public int getReceivedMessageHourTextColor() {
         return receivedMessageHourTextColor;
     }
 
-    public ChatUiConfiguration setReceivedMessageHourTextColor(@ColorInt int receivedMessageHourTextColor) {
+    public ChatUiConfiguration setReceivedMessageHourTextColor(@ColorRes int receivedMessageHourTextColor) {
         this.receivedMessageHourTextColor = receivedMessageHourTextColor;
         return this;
     }
 
     @DrawableRes
-    public int getMetadataBackground() {
-        return metadataBackground;
+    public int getReceivedMessageAvatar() {
+        return receivedMessageAvatar;
     }
 
-    public ChatUiConfiguration setMetadataBackground(@DrawableRes int metadataBackground) {
-        this.metadataBackground = metadataBackground;
+    public ChatUiConfiguration setReceivedMessageAvatar(@DrawableRes int receivedMessageAvatar) {
+        this.receivedMessageAvatar = receivedMessageAvatar;
         return this;
     }
 
-    @ColorInt
+    public DateFormat getDateFormat() {
+        return dateFormat;
+    }
+
+    public ChatUiConfiguration setDateFormat(DateFormat dateFormat) {
+        this.dateFormat = dateFormat;
+        return this;
+    }
+
+    public boolean isSentMessageTopIndicator() {
+        return sentMessageTopIndicator;
+    }
+
+    public ChatUiConfiguration setSentMessageTopIndicator(boolean sentMessageTopIndicator) {
+        this.sentMessageTopIndicator = sentMessageTopIndicator;
+        return this;
+    }
+
+    public boolean isReceivedMessageTopIndicator() {
+        return receivedMessageTopIndicator;
+    }
+
+    public ChatUiConfiguration setReceivedMessageTopIndicator(boolean receivedMessageTopIndicator) {
+        this.receivedMessageTopIndicator = receivedMessageTopIndicator;
+        return this;
+    }
+
+    @ColorRes
     public int getMetadataBackgroundColor() {
         return metadataBackgroundColor;
     }
 
-    public ChatUiConfiguration setMetadataBackgroundColor(@ColorInt int metadataBackgroundColor) {
+    public ChatUiConfiguration setMetadataBackgroundColor(@ColorRes int metadataBackgroundColor) {
         this.metadataBackgroundColor = metadataBackgroundColor;
+        return this;
+    }
+
+    @ColorRes
+    public int getMetadataTextColor() {
+        return metadataTextColor;
+    }
+
+    public ChatUiConfiguration setMetadataTextColor(@ColorRes int metadataTextColor) {
+        this.metadataTextColor = metadataTextColor;
+        return this;
+    }
+
+    @ColorRes
+    public int getSendMessageButtonColor() {
+        return sendMessageButtonColor;
+    }
+
+    public ChatUiConfiguration setSendMessageButtonColor(@ColorRes int sendMessageButtonColor) {
+        this.sendMessageButtonColor = sendMessageButtonColor;
         return this;
     }
 
@@ -204,27 +193,27 @@ public class ChatUiConfiguration {
         return this;
     }
 
-    public int getMessagesPageSize() {
-        return messagesPageSize;
+    @ColorRes
+    public int getMessageLoadingColor() {
+        return messageLoadingColor;
     }
 
-    public ChatUiConfiguration setMessagesPageSize(int messagesPageSize) {
-        this.messagesPageSize = messagesPageSize;
+    public ChatUiConfiguration setMessageLoadingColor(@ColorRes int messageLoadingColor) {
+        this.messageLoadingColor = messageLoadingColor;
         return this;
     }
 
-    public boolean messagesPagingEnabled() {
-        return getMessagesPageSize() > 0;
+    public int getMessagePageSize() {
+        return messagePageSize;
     }
 
-    @ColorInt
-    public int getMessagesLoadingColor() {
-        return messagesLoadingColor;
-    }
-
-    public ChatUiConfiguration setMessagesLoadingColor(@ColorInt int messagesLoadingColor) {
-        this.messagesLoadingColor = messagesLoadingColor;
+    public ChatUiConfiguration setMessagePageSize(int messagePageSize) {
+        this.messagePageSize = messagePageSize;
         return this;
+    }
+
+    public boolean messagePagingEnabled() {
+        return messagePageSize > 0;
     }
 
 }

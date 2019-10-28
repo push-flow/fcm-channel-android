@@ -7,4 +7,8 @@
     <dimen name="hover_tab_size">104dp</dimen>
     <dimen name="hover_tab_margin">16dp</dimen>
 
+    <dimen name="fcm_client_dp_64">64dp</dimen>
+    <dimen name="fcm_client_dp_8">8dp</dimen>
+    <dimen name="fcm_client_dp_0">0dp</dimen>
+
 </resources>

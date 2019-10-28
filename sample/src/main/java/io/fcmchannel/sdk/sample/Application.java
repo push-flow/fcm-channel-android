@@ -5,7 +5,6 @@ import androidx.core.content.res.ResourcesCompat;
 
 import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.sample.services.PushRegistrationService;
-import io.fcmchannel.sdk.ui.ChatUiConfiguration;
 import io.fcmchannel.sdk.ui.UiConfiguration;
 
 /**
@@ -18,28 +17,12 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
 
-        ChatUiConfiguration chatUiConfiguration = new ChatUiConfiguration()
-                .setChatBackground(R.color.mischka)
-                .setSendMessageIconColor(getColorCompat(R.color.picton_blue))
-                .setSentMessageBackgroundColor(getColorCompat(R.color.rice_flower))
-                .setSentMessageTextColor(getColorCompat(R.color.black))
-                .setSentMessageHourTextColor(getColorCompat(R.color.gray_chateau))
-                .setSentMessageInTopDirection(false)
-                .setReceivedMessageIcon(R.drawable.avatar)
-                .setReceivedMessageBackgroundColor(getColorCompat(R.color.white))
-                .setReceivedMessageTextColor(getColorCompat(R.color.black))
-                .setReceivedMessageHourTextColor(getColorCompat(R.color.gray_chateau))
-                .setReceivedMessageInTopDirection(false)
-                .setMessagesPageSize(10)
-                .setMessagesLoadingColor(getColorCompat(R.color.fcm_client_gray_light_2));
-
         UiConfiguration uiConfiguration = new UiConfiguration()
                 .setPermissionMessage("Please give me permission to open floating chat!")
                 .setTheme(R.style.AppTheme_Blue)
                 .setFloatingChatIcon(R.mipmap.ic_launcher)
                 .setTitleColor(getColorCompat(android.R.color.white))
-                .setTitleString("FCM Channel Sample")
-                .setChatUiConfiguration(chatUiConfiguration);
+                .setTitleString("FCM Channel Sample");
 
         FcmClient.initialize(new FcmClient.Builder(this)
                 .setHost(getString(R.string.host))

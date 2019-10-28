@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="uiConfig"
+            type="io.fcmchannel.sdk.ui.ChatUiConfiguration" />
+
+        <variable
+            name="metadata"
+            type="String" />
+
+    </data>
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/fcm_client_shape_round"
+        android:clickable="true"
+        android:ellipsize="end"
+        android:focusable="true"
+        android:maxLines="1"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="8dp"
+        android:text="@{metadata}"
+        android:textSize="15sp"
+        app:backgroundColorRes="@{uiConfig.metadataBackgroundColor}"
+        app:textColorRes="@{uiConfig.metadataTextColor}"
+        tools:text="metadata"
+        tools:textColor="@android:color/white" />
+
+</layout>
