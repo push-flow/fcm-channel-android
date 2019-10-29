@@ -80,8 +80,10 @@ public class MessageViewHolder extends ChatViewHolder {
     private void bindMetadata(MessageMetadata metadata) {
         metadataAdapter.clear();
 
-        if (metadata == null) return;
-
+        if (metadata == null) {
+            binding.metadataList.setVisibility(View.GONE);
+            return;
+        }
         List<String> quickReplies = metadata.getQuickReplies();
         List<UrlButton> urlButtons = metadata.getUrlButtons();
 
