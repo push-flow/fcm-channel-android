@@ -29,7 +29,9 @@ public class Application extends android.app.Application {
                 .setReceivedMessageBackgroundColor(getColorCompat(R.color.white))
                 .setReceivedMessageTextColor(getColorCompat(R.color.black))
                 .setReceivedMessageHourTextColor(getColorCompat(R.color.gray_chateau))
-                .setReceivedMessageInTopDirection(false);
+                .setReceivedMessageInTopDirection(false)
+                .setMessagesPageSize(10)
+                .setMessagesLoadingColor(getColorCompat(R.color.fcm_client_gray_light_2));
 
         UiConfiguration uiConfiguration = new UiConfiguration()
                 .setPermissionMessage("Please give me permission to open floating chat!")

@@ -9,22 +9,42 @@ import static io.fcmchannel.sdk.ui.UiConfiguration.INVALID_VALUE;
 
 public class ChatUiConfiguration {
 
+    @DrawableRes
     private int sentMessageBackground = INVALID_VALUE;
+    @DrawableRes
     private int receivedMessageBackground = INVALID_VALUE;
+    @ColorInt
     private int sentMessageBackgroundColor = INVALID_VALUE;
+    @ColorInt
     private int receivedMessageBackgroundColor = INVALID_VALUE;
+    @ColorInt
     private int sentMessageTextColor = INVALID_VALUE;
+    @ColorInt
     private int receivedMessageTextColor = INVALID_VALUE;
+    @ColorInt
     private int sendMessageIconColor = INVALID_VALUE;
+    @ColorInt
     private int receivedMessageIcon = INVALID_VALUE;
+
     private boolean sentMessageInTopDirection = false;
     private boolean receivedMessageInTopDirection = false;
+
+    @ColorInt
     private int sentMessageHourTextColor = INVALID_VALUE;
+    @ColorInt
     private int receivedMessageHourTextColor = INVALID_VALUE;
+    @DrawableRes
     private int metadataBackground = INVALID_VALUE;
+    @DrawableRes
     private int metadataBackgroundColor = INVALID_VALUE;
+    @DrawableRes
     private int chatBackground = INVALID_VALUE;
+    @DrawableRes
     private int chatBackgroundImage = INVALID_VALUE;
+
+    private int messagesPageSize = -1;
+    @ColorInt
+    private int messagesLoadingColor = INVALID_VALUE;
 
     @DrawableRes
     public int getSentMessageBackground() {
@@ -181,6 +201,29 @@ public class ChatUiConfiguration {
 
     public ChatUiConfiguration setChatBackgroundImage(@DrawableRes int chatBackgroundImage) {
         this.chatBackgroundImage = chatBackgroundImage;
+        return this;
+    }
+
+    public int getMessagesPageSize() {
+        return messagesPageSize;
+    }
+
+    public ChatUiConfiguration setMessagesPageSize(int messagesPageSize) {
+        this.messagesPageSize = messagesPageSize;
+        return this;
+    }
+
+    public boolean messagesPagingEnabled() {
+        return getMessagesPageSize() > 0;
+    }
+
+    @ColorInt
+    public int getMessagesLoadingColor() {
+        return messagesLoadingColor;
+    }
+
+    public ChatUiConfiguration setMessagesLoadingColor(@ColorInt int messagesLoadingColor) {
+        this.messagesLoadingColor = messagesLoadingColor;
         return this;
     }
 
