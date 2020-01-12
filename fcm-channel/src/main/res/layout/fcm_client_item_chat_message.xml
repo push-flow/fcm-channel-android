@@ -22,10 +22,9 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/attachmentThumbnail"
+                android:id="@+id/chatMessageImage"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:minWidth="500dp"
                 android:layout_margin="4dp"
                 android:importantForAccessibility="no"
                 android:scaleType="centerCrop"

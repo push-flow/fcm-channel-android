@@ -50,19 +50,16 @@ public class BundleHelper {
     }
 
     private static List<Attachment> getAttachments(Bundle data) {
-        final String attachmentsJson = data.getString(EXTRA_ATTACHMENTS);
+        final String text = getMessageText(data);
+        final String imageUrl = AttachmentHelper.firstImageUrl(text);
 
-        if (attachmentsJson != null && !attachmentsJson.isEmpty()) {
-            final String[] attachmentUrls = new Gson().fromJson(attachmentsJson, String[].class);
+        if (!imageUrl.isEmpty()) {
+            final Attachment attachment = new Attachment()
+                .setContentType("image/" + AttachmentHelper.getFileExtension(imageUrl))
+                .setUrl(imageUrl);
             final List<Attachment> attachments = new ArrayList<>();
 
-            for (String url : attachmentUrls) {
-                final Attachment attachment = new Attachment()
-                    .setContentType(AttachmentHelper.getContentType(url))
-                    .setUrl(url);
-
-                attachments.add(attachment);
-            }
+            attachments.add(attachment);
             return attachments;
         }
         return null;

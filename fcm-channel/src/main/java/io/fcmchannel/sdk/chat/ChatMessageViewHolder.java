@@ -5,9 +5,6 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -17,10 +14,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import io.fcmchannel.sdk.FcmClient;
@@ -45,7 +44,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
     private ViewGroup parent;
 
-    private ImageView attachmentThumbnail;
+    private ImageView image;
     private TextView message;
     private TextView date;
     private ImageView icon;
@@ -72,7 +71,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         this.hourFormatter = DateFormat.getTimeInstance(DateFormat.SHORT);
         this.parent = itemView.findViewById(R.id.bubble);
 
-        this.attachmentThumbnail = itemView.findViewById(R.id.attachmentThumbnail);
+        this.image = itemView.findViewById(R.id.chatMessageImage);
         this.message = itemView.findViewById(R.id.chatMessage);
         this.date = itemView.findViewById(R.id.chatMessageDate);
 
@@ -130,7 +129,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         setupMessageBackgroundColor(parent.getBackground(), incoming);
         setupMessageTextColor(message, incoming);
         setupMessageHourTextColor(date, incoming);
-        setupMessageAttachments(chatMessage, message, attachmentThumbnail);
+        setupMessageAttachments(chatMessage, message, image);
     }
 
     private void setupMessageBackground(View message, boolean incoming) {
@@ -190,56 +189,31 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
     private void setupMessageAttachments(
         final Message chatMessage,
         final TextView message,
-        final ImageView thumbnail
+        final ImageView image
     ) {
         final List<Attachment> attachments = chatMessage.getAttachments();
 
         if (attachments == null || attachments.isEmpty()) {
-            thumbnail.setVisibility(View.GONE);
-            thumbnail.setOnClickListener(null);
+            image.setVisibility(View.GONE);
             return;
         }
-        final List<Attachment> nonMediaAttachments = new ArrayList<>();
-        Attachment attachmentThumbnail = null;
+        final StringBuilder textBuilder = new StringBuilder(chatMessage.getText());
+        Attachment firstImageAttachment = null;
 
         for (Attachment attachment : attachments) {
-            final String contentType = attachment.getContentType();
-
-            if (attachmentThumbnail == null
-                && (AttachmentHelper.isContentTypeImage(contentType)
-                || AttachmentHelper.isContentTypeVideo(contentType))) {
-                attachmentThumbnail = attachment;
+            if (firstImageAttachment == null && AttachmentHelper.isImageUrl(attachment.getUrl())) {
+                firstImageAttachment = attachment;
             } else {
-                nonMediaAttachments.add(attachment);
+                textBuilder.append("\n").append(attachment.getUrl());
             }
         }
-        if (attachmentThumbnail != null) {
-            thumbnail.setVisibility(View.VISIBLE);
-            setAttachmentThumbnail(thumbnail, attachmentThumbnail);
+        if (firstImageAttachment != null) {
+            image.setVisibility(View.VISIBLE);
+            Picasso.get()
+                .load(firstImageAttachment.getUrl())
+                .into(image);
         }
-        putAttachmentUrlsOnText(nonMediaAttachments, message);
-    }
-
-    private void setAttachmentThumbnail(final ImageView thumbnail, final Attachment attachment) {
-        final String contentType = attachment.getContentType();
-
-        if (AttachmentHelper.isContentTypeVideo(contentType)) {
-//            thumbnail.setImageResource(R.drawable.fcm_video_thumbnail);
-        } else if (AttachmentHelper.isContentTypeImage(contentType)) {
-            Picasso.with(thumbnail.getContext())
-                .load(attachment.getUrl())
-                .into(thumbnail);
-        }
-    }
-
-    private void putAttachmentUrlsOnText(final List<Attachment> attachments, final TextView message) {
-        final StringBuilder text = new StringBuilder(message.getText().toString());
-
-        for (Attachment attachment : attachments) {
-            text.append("\n\n")
-                .append(attachment.getUrl());
-        }
-        message.setText(text.toString());
+        message.setText(textBuilder.toString());
     }
 
     private void setupBubblePosition(boolean incoming, FrameLayout.LayoutParams params) {
@@ -252,7 +226,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
             params.leftMargin = incoming ? leftMarginIncoming : leftMarginOutgoing;
             params.rightMargin = incoming ? rightMarginIncoming : rightMarginOutgoing;
         }
-        if (!incoming && checkHasMediaAttachment()) {
+        if (!incoming && checkHasImageAttachment()) {
             params.width = ViewGroup.LayoutParams.MATCH_PARENT;
         } else {
             params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -313,12 +287,9 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         this.onMetadataItemClickListener = onMetadataItemClickListener;
     }
 
-    private boolean checkHasMediaAttachment() {
+    private boolean checkHasImageAttachment() {
         for (Attachment attachment : chatMessage.getAttachments()) {
-            final String contentType = attachment.getContentType();
-
-            if (AttachmentHelper.isContentTypeImage(contentType)
-                || AttachmentHelper.isContentTypeVideo(contentType)) {
+            if (AttachmentHelper.isImageUrl(attachment.getUrl())) {
                 return true;
             }
         }
