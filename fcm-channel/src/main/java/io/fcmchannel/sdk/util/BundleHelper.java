@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import io.fcmchannel.sdk.core.models.Attachment;
 import io.fcmchannel.sdk.core.models.Message;
 import io.fcmchannel.sdk.core.models.MessageMetadata;
 
@@ -20,15 +21,16 @@ public class BundleHelper {
     private static final String EXTRA_MESSAGE_ID = "message_id";
     private static final String EXTRA_MESSAGE = "message";
     private static final String EXTRA_METADATA = "metadata";
+    private static final String EXTRA_ATTACHMENTS = "attachments";
     private static final String EXTRA_QUICK_REPLIES = "quick_replies";
 
     public static Message getMessage(Bundle data) {
-        final Message message = new Message();
-        message.setId(getMessageId(data));
-        message.setText(getMessageText(data));
-        message.setDirection(Message.DIRECTION_OUTGOING);
-        message.setMetadata(getMessageMetadata(data));
-        return message;
+        return new Message()
+            .setDirection(Message.DIRECTION_OUTGOING)
+            .setId(getMessageId(data))
+            .setText(getMessageText(data))
+            .setAttachments(getAttachments(data))
+            .setMetadata(getMessageMetadata(data));
     }
 
     public static Bundle convertToBundleFrom(Map<String, String> data) {
@@ -45,6 +47,25 @@ public class BundleHelper {
 
     private static String getMessageText(Bundle data) {
         return data.getString(EXTRA_MESSAGE);
+    }
+
+    private static List<Attachment> getAttachments(Bundle data) {
+        final String attachmentsJson = data.getString(EXTRA_ATTACHMENTS);
+
+        if (attachmentsJson != null && !attachmentsJson.isEmpty()) {
+            final String[] attachmentUrls = new Gson().fromJson(attachmentsJson, String[].class);
+            final List<Attachment> attachments = new ArrayList<>();
+
+            for (String url : attachmentUrls) {
+                final Attachment attachment = new Attachment()
+                    .setContentType(AttachmentHelper.getContentType(url))
+                    .setUrl(url);
+
+                attachments.add(attachment);
+            }
+            return attachments;
+        }
+        return null;
     }
 
     private static MessageMetadata getMessageMetadata(Bundle data) {
