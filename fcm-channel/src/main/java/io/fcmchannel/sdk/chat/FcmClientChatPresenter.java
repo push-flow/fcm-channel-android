@@ -3,16 +3,21 @@ package io.fcmchannel.sdk.chat;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.R;
 import io.fcmchannel.sdk.core.models.Message;
+import io.fcmchannel.sdk.core.models.MessageMetadata;
 import io.fcmchannel.sdk.core.models.network.ApiResponse;
 import io.fcmchannel.sdk.core.models.Contact;
 import io.fcmchannel.sdk.core.network.RestServices;
+import io.fcmchannel.sdk.persistence.Preferences;
 import io.fcmchannel.sdk.util.BundleHelper;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -156,11 +161,39 @@ class FcmClientChatPresenter {
     }
 
     private void onMessagesLoaded(List<Message> messages) {
+        if (!messages.isEmpty()) {
+            final Message lastMessage = messages.get(0);
+            final Preferences prefs = FcmClient.getPreferences();
+            final Set<String> quickReplies = prefs.getQuickRepliesOfLastMessage();
+
+            if (lastMessage != null
+                && lastMessage.getDirection().equals(Message.DIRECTION_OUTGOING)
+                && !quickReplies.isEmpty()) {
+
+                if (lastMessage.getMetadata() == null) {
+                    lastMessage.setMetadata(new MessageMetadata());
+                }
+                lastMessage.getMetadata().setQuickReply(new ArrayList<>(quickReplies));
+            }
+        }
         view.onMessagesLoaded(messages);
     }
 
     void loadMessage(Bundle data) {
-        Message message = BundleHelper.getMessage(data);
+        final Message message = BundleHelper.getMessage(data);
+        final MessageMetadata metadata = message.getMetadata();
+
+        if (message.getDirection().equals(Message.DIRECTION_OUTGOING)) {
+            final Preferences prefs = FcmClient.getPreferences();
+
+            if (metadata != null
+                && metadata.getQuickReplies() != null
+                && !metadata.getQuickReplies().isEmpty()) {
+                prefs.setQuickRepliesOfLastMessage(new HashSet<>(metadata.getQuickReplies()));
+            } else {
+                prefs.setQuickRepliesOfLastMessage(new HashSet<String>());
+            }
+        }
         message.setCreatedOn(new Date());
         view.onMessageLoaded(message);
     }
