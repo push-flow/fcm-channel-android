@@ -166,8 +166,7 @@ class FcmClientChatPresenter {
             final Preferences prefs = FcmClient.getPreferences();
             final Set<String> quickReplies = prefs.getQuickRepliesOfLastMessage();
 
-            if (lastMessage != null
-                && lastMessage.getDirection().equals(Message.DIRECTION_OUTGOING)
+            if (lastMessage.getDirection().equals(Message.DIRECTION_OUTGOING)
                 && !quickReplies.isEmpty()) {
 
                 if (lastMessage.getMetadata() == null) {
