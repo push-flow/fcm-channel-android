@@ -17,15 +17,21 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.R;
 import io.fcmchannel.sdk.chat.metadata.OnMetadataItemClickListener;
 import io.fcmchannel.sdk.chat.metadata.QuickReplyAdapter;
 import io.fcmchannel.sdk.chat.metadata.UrlButtonAdapter;
+import io.fcmchannel.sdk.core.models.Attachment;
 import io.fcmchannel.sdk.core.models.Message;
 import io.fcmchannel.sdk.ui.ChatUiConfiguration;
+import io.fcmchannel.sdk.util.AttachmentHelper;
 import io.fcmchannel.sdk.util.SpaceItemDecoration;
 
 import static io.fcmchannel.sdk.ui.UiConfiguration.INVALID_VALUE;
@@ -39,6 +45,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
     private ViewGroup parent;
 
+    private ImageView attachmentThumbnail;
     private TextView message;
     private TextView date;
     private ImageView icon;
@@ -65,6 +72,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         this.hourFormatter = DateFormat.getTimeInstance(DateFormat.SHORT);
         this.parent = itemView.findViewById(R.id.bubble);
 
+        this.attachmentThumbnail = itemView.findViewById(R.id.attachmentThumbnail);
         this.message = itemView.findViewById(R.id.chatMessage);
         this.date = itemView.findViewById(R.id.chatMessageDate);
 
@@ -104,7 +112,6 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         this.chatMessage = chatMessage;
 
         message.setText(chatMessage.getText());
-        Linkify.addLinks(message, Linkify.ALL);
         date.setText(hourFormatter.format(chatMessage.getCreatedOn()));
 
         bindContainer(chatMessage);
@@ -123,6 +130,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         setupMessageBackgroundColor(parent.getBackground(), incoming);
         setupMessageTextColor(message, incoming);
         setupMessageHourTextColor(date, incoming);
+        setupMessageAttachments(chatMessage, message, attachmentThumbnail);
     }
 
     private void setupMessageBackground(View message, boolean incoming) {
@@ -179,6 +187,61 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
+    private void setupMessageAttachments(
+        final Message chatMessage,
+        final TextView message,
+        final ImageView thumbnail
+    ) {
+        final List<Attachment> attachments = chatMessage.getAttachments();
+
+        if (attachments == null || attachments.isEmpty()) {
+            thumbnail.setVisibility(View.GONE);
+            thumbnail.setOnClickListener(null);
+            return;
+        }
+        final List<Attachment> nonMediaAttachments = new ArrayList<>();
+        Attachment attachmentThumbnail = null;
+
+        for (Attachment attachment : attachments) {
+            final String contentType = attachment.getContentType();
+
+            if (attachmentThumbnail == null
+                && (AttachmentHelper.isContentTypeImage(contentType)
+                || AttachmentHelper.isContentTypeVideo(contentType))) {
+                attachmentThumbnail = attachment;
+            } else {
+                nonMediaAttachments.add(attachment);
+            }
+        }
+        if (attachmentThumbnail != null) {
+            thumbnail.setVisibility(View.VISIBLE);
+            setAttachmentThumbnail(thumbnail, attachmentThumbnail);
+        }
+        putAttachmentUrlsOnText(nonMediaAttachments, message);
+    }
+
+    private void setAttachmentThumbnail(final ImageView thumbnail, final Attachment attachment) {
+        final String contentType = attachment.getContentType();
+
+        if (AttachmentHelper.isContentTypeVideo(contentType)) {
+//            thumbnail.setImageResource(R.drawable.fcm_video_thumbnail);
+        } else if (AttachmentHelper.isContentTypeImage(contentType)) {
+            Picasso.with(thumbnail.getContext())
+                .load(attachment.getUrl())
+                .into(thumbnail);
+        }
+    }
+
+    private void putAttachmentUrlsOnText(final List<Attachment> attachments, final TextView message) {
+        final StringBuilder text = new StringBuilder(message.getText().toString());
+
+        for (Attachment attachment : attachments) {
+            text.append("\n\n")
+                .append(attachment.getUrl());
+        }
+        message.setText(text.toString());
+    }
+
     private void setupBubblePosition(boolean incoming, FrameLayout.LayoutParams params) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             params.gravity = incoming ? Gravity.END : Gravity.START;
@@ -188,6 +251,11 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
             params.gravity = incoming ? Gravity.RIGHT : Gravity.LEFT;
             params.leftMargin = incoming ? leftMarginIncoming : leftMarginOutgoing;
             params.rightMargin = incoming ? rightMarginIncoming : rightMarginOutgoing;
+        }
+        if (!incoming && checkHasMediaAttachment()) {
+            params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        } else {
+            params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
     }
 
@@ -243,6 +311,18 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
     void setOnMetadataItemClickListener(OnMetadataItemClickListener onMetadataItemClickListener) {
         this.onMetadataItemClickListener = onMetadataItemClickListener;
+    }
+
+    private boolean checkHasMediaAttachment() {
+        for (Attachment attachment : chatMessage.getAttachments()) {
+            final String contentType = attachment.getContentType();
+
+            if (AttachmentHelper.isContentTypeImage(contentType)
+                || AttachmentHelper.isContentTypeVideo(contentType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean checkHasQuickReplies() {

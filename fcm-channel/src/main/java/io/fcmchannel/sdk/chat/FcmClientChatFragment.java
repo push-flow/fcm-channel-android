@@ -133,6 +133,7 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
 
         messageList.addItemDecoration(messagesItemDecoration);
         messageList.setAdapter(adapter);
+        messageList.setHasFixedSize(false);
 
         ImageView sendMessage = view.findViewById(R.id.sendMessage);
         sendMessage.setOnClickListener(onSendMessageClickListener);
