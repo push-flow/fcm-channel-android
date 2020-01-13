@@ -23,7 +23,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name="io.fcmchannel.sdk.chat.FcmClientChatActivity" />
+
+        <activity
+            android:name="br.com.ilhasoft.support.media.view.MediaViewActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
 
         <activity
             android:name=".MainActivity"

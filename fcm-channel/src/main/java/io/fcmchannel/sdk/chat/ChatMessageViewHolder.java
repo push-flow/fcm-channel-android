@@ -1,13 +1,11 @@
 package io.fcmchannel.sdk.chat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -17,15 +15,28 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.text.DateFormat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import br.com.ilhasoft.support.media.view.MediaModel;
+import br.com.ilhasoft.support.media.view.MediaViewOptions;
+import br.com.ilhasoft.support.media.view.models.ImageMedia;
+import br.com.ilhasoft.support.media.view.models.VideoMedia;
 import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.R;
 import io.fcmchannel.sdk.chat.metadata.OnMetadataItemClickListener;
 import io.fcmchannel.sdk.chat.metadata.QuickReplyAdapter;
 import io.fcmchannel.sdk.chat.metadata.UrlButtonAdapter;
+import io.fcmchannel.sdk.core.models.Attachment;
 import io.fcmchannel.sdk.core.models.Message;
 import io.fcmchannel.sdk.ui.ChatUiConfiguration;
+import io.fcmchannel.sdk.util.AttachmentHelper;
 import io.fcmchannel.sdk.util.SpaceItemDecoration;
 
 import static io.fcmchannel.sdk.ui.UiConfiguration.INVALID_VALUE;
@@ -39,6 +50,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
     private ViewGroup parent;
 
+    private ImageView image;
     private TextView message;
     private TextView date;
     private ImageView icon;
@@ -65,6 +77,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         this.hourFormatter = DateFormat.getTimeInstance(DateFormat.SHORT);
         this.parent = itemView.findViewById(R.id.bubble);
 
+        this.image = itemView.findViewById(R.id.chatMessageImage);
         this.message = itemView.findViewById(R.id.chatMessage);
         this.date = itemView.findViewById(R.id.chatMessageDate);
 
@@ -104,7 +117,6 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         this.chatMessage = chatMessage;
 
         message.setText(chatMessage.getText());
-        Linkify.addLinks(message, Linkify.ALL);
         date.setText(hourFormatter.format(chatMessage.getCreatedOn()));
 
         bindContainer(chatMessage);
@@ -123,6 +135,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         setupMessageBackgroundColor(parent.getBackground(), incoming);
         setupMessageTextColor(message, incoming);
         setupMessageHourTextColor(date, incoming);
+        setupMessageAttachments(chatMessage, message, image);
     }
 
     private void setupMessageBackground(View message, boolean incoming) {
@@ -179,6 +192,63 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
+    private void setupMessageAttachments(
+        final Message chatMessage,
+        final TextView message,
+        final ImageView image
+    ) {
+        final List<Attachment> attachments = chatMessage.getAttachments();
+
+        if (attachments == null || attachments.isEmpty()) {
+            image.setVisibility(View.GONE);
+            return;
+        }
+        final StringBuilder textBuilder = new StringBuilder(chatMessage.getText());
+        final ArrayList<MediaModel> attachmentMedias = new ArrayList<>();
+        Attachment firstImageAttachment = null;
+
+        for (Attachment attachment : attachments) {
+            final String url = attachment.getUrl();
+
+            if (AttachmentHelper.isImageUrl(url)) {
+                if (firstImageAttachment == null) {
+                    firstImageAttachment = attachment;
+                }
+                attachmentMedias.add(new ImageMedia(url));
+            }
+            else if (AttachmentHelper.isVideoUrl(url)) {
+                attachmentMedias.add(new VideoMedia(url, AttachmentHelper.URI_VIDEO_THUMBNAIL));
+            }
+            textBuilder.append("\n").append(url);
+        }
+        if (firstImageAttachment != null) {
+            image.setVisibility(View.VISIBLE);
+            setOnImageAttachmentClickListener(image, attachmentMedias);
+            Picasso.with(image.getContext())
+                .load(firstImageAttachment.getUrl())
+                .into(image);
+        }
+        message.setText(textBuilder.toString().replaceAll("\n", "\n\n"));
+    }
+
+    private void setOnImageAttachmentClickListener(
+        final ImageView image,
+        final ArrayList<MediaModel> medias
+    ) {
+        image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Context context = image.getContext();
+                final Intent intent = new MediaViewOptions(medias)
+                    .setTitleEnabled(false)
+                    .setToolbarColorRes(android.R.color.transparent)
+                    .createIntent(context);
+
+                context.startActivity(intent);
+            }
+        });
+    }
+
     private void setupBubblePosition(boolean incoming, FrameLayout.LayoutParams params) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             params.gravity = incoming ? Gravity.END : Gravity.START;
@@ -188,6 +258,11 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
             params.gravity = incoming ? Gravity.RIGHT : Gravity.LEFT;
             params.leftMargin = incoming ? leftMarginIncoming : leftMarginOutgoing;
             params.rightMargin = incoming ? rightMarginIncoming : rightMarginOutgoing;
+        }
+        if (!incoming && checkHasImageAttachment()) {
+            params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        } else {
+            params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
     }
 
@@ -243,6 +318,18 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 
     void setOnMetadataItemClickListener(OnMetadataItemClickListener onMetadataItemClickListener) {
         this.onMetadataItemClickListener = onMetadataItemClickListener;
+    }
+
+    private boolean checkHasImageAttachment() {
+        if (chatMessage.getAttachments() == null) {
+            return false;
+        }
+        for (Attachment attachment : chatMessage.getAttachments()) {
+            if (AttachmentHelper.isImageUrl(attachment.getUrl())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean checkHasQuickReplies() {

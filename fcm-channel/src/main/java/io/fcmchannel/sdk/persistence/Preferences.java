@@ -5,8 +5,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by john-mac on 6/27/16.
@@ -18,6 +22,7 @@ public class Preferences {
     private static final String KEY_FCM_TOKEN = "fcmToken";
     private static final String KEY_CONTACT_UUID = "contactUuid";
     private static final String KEY_UNREAD_MESSAGES = "unreadMessages";
+    private static final String KEY_QUICK_REPLIES = "quickReplies";
 
     private static final String PREFERENCES_NAME = "io.fcmchannel.sdk.preferences";
 
@@ -71,6 +76,14 @@ public class Preferences {
     public Preferences setUnreadMessages(int unreadMessages) {
         this.objects.put(getKey(KEY_UNREAD_MESSAGES), String.valueOf(unreadMessages));
         return this;
+    }
+
+    public Set<String> getQuickRepliesOfLastMessage() {
+        return sharedPreferences.getStringSet(getKey(KEY_QUICK_REPLIES), new HashSet<String>());
+    }
+
+    public void setQuickRepliesOfLastMessage(final Set<String> quickReplies) {
+        sharedPreferences.edit().putStringSet(getKey(KEY_QUICK_REPLIES), quickReplies).apply();
     }
 
     public String getFcmToken() {
