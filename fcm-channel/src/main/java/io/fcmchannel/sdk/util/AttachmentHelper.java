@@ -1,5 +1,7 @@
 package io.fcmchannel.sdk.util;
 
+import androidx.core.util.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -25,15 +27,18 @@ public abstract class AttachmentHelper {
         return pattern.matcher(url).matches();
     }
 
-    public static List<String> extractMediaUrls(final String text) {
-        final Pattern pattern = Pattern.compile(String.format("(%s)|(%s)", REGEX_IMAGE, REGEX_VIDEO));
+    public static Pair<String, List<String>> extractMediaUrls(final String text) {
+        final Pattern pattern = Pattern.compile(String.format("\n(%s)|\n(%s)", REGEX_IMAGE, REGEX_VIDEO));
         final Matcher matcher = pattern.matcher(text);
         final List<String> urls = new ArrayList<>();
+        String textWithoutUrls = text;
 
         while (matcher.find()) {
-            urls.add(matcher.group());
+            final String url = matcher.group();
+            urls.add(url.replace("\n", ""));
+            textWithoutUrls = textWithoutUrls.replace(url, "");
         }
-        return urls;
+        return new Pair<>(textWithoutUrls, urls);
     }
 
 }

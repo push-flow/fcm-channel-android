@@ -2,6 +2,8 @@ package io.fcmchannel.sdk.util;
 
 import android.os.Bundle;
 
+import androidx.core.util.Pair;
+
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -24,12 +26,14 @@ public class BundleHelper {
     private static final String EXTRA_QUICK_REPLIES = "quick_replies";
 
     public static Message getMessage(Bundle data) {
-        return new Message()
+        final Message message = new Message()
             .setDirection(Message.DIRECTION_OUTGOING)
             .setId(getMessageId(data))
             .setText(getMessageText(data))
-            .setAttachments(getAttachments(data))
             .setMetadata(getMessageMetadata(data));
+
+        setAttachments(data, message);
+        return message;
     }
 
     public static Bundle convertToBundleFrom(Map<String, String> data) {
@@ -48,11 +52,12 @@ public class BundleHelper {
         return data.getString(EXTRA_MESSAGE);
     }
 
-    private static List<Attachment> getAttachments(Bundle data) {
+    private static void setAttachments(Bundle data, Message message) {
         final String text = getMessageText(data);
-        final List<String> urls = AttachmentHelper.extractMediaUrls(text);
+        final Pair<String, List<String>> extract = AttachmentHelper.extractMediaUrls(text);
+        final List<String> urls = extract.second;
 
-        if (!urls.isEmpty()) {
+        if (urls != null && !urls.isEmpty()) {
             final List<Attachment> attachments = new ArrayList<>();
 
             for (String url : urls) {
@@ -65,9 +70,9 @@ public class BundleHelper {
                     attachments.add(new Attachment().setContentType("video/" + ext).setUrl(url));
                 }
             }
-            return attachments;
+            message.setAttachments(attachments);
         }
-        return null;
+        message.setText(extract.first);
     }
 
     private static MessageMetadata getMessageMetadata(Bundle data) {

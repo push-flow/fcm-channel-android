@@ -326,6 +326,9 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
     }
 
     private boolean checkHasImageAttachment() {
+        if (chatMessage.getAttachments() == null) {
+            return false;
+        }
         for (Attachment attachment : chatMessage.getAttachments()) {
             if (AttachmentHelper.isImageUrl(attachment.getUrl())) {
                 return true;
