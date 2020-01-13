@@ -25,7 +25,7 @@ public class Application extends android.app.Application {
                 .setSentMessageTextColor(getColorCompat(R.color.black))
                 .setSentMessageHourTextColor(getColorCompat(R.color.gray_chateau))
                 .setSentMessageInTopDirection(false)
-                .setReceivedMessageIcon(R.drawable.avatar)
+                .setReceivedMessageIcon(R.mipmap.ic_launcher)
                 .setReceivedMessageBackgroundColor(getColorCompat(R.color.white))
                 .setReceivedMessageTextColor(getColorCompat(R.color.black))
                 .setReceivedMessageHourTextColor(getColorCompat(R.color.gray_chateau))

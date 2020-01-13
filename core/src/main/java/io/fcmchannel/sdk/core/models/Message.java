@@ -42,6 +42,8 @@ public class Message {
 
     private String text;
 
+    private List<Attachment> attachments;
+
     private List<Label> labels;
 
     private MessageMetadata metadata;
@@ -149,6 +151,15 @@ public class Message {
 
     public Message setLabels(List<Label> labels) {
         this.labels = labels;
+        return this;
+    }
+
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public Message setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
         return this;
     }
 

@@ -2,6 +2,8 @@ package io.fcmchannel.sdk.util;
 
 import android.os.Bundle;
 
+import androidx.core.util.Pair;
+
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -9,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import io.fcmchannel.sdk.core.models.Attachment;
 import io.fcmchannel.sdk.core.models.Message;
 import io.fcmchannel.sdk.core.models.MessageMetadata;
 
@@ -23,11 +26,13 @@ public class BundleHelper {
     private static final String EXTRA_QUICK_REPLIES = "quick_replies";
 
     public static Message getMessage(Bundle data) {
-        final Message message = new Message();
-        message.setId(getMessageId(data));
-        message.setText(getMessageText(data));
-        message.setDirection(Message.DIRECTION_OUTGOING);
-        message.setMetadata(getMessageMetadata(data));
+        final Message message = new Message()
+            .setDirection(Message.DIRECTION_OUTGOING)
+            .setId(getMessageId(data))
+            .setText(getMessageText(data))
+            .setMetadata(getMessageMetadata(data));
+
+        setAttachments(data, message);
         return message;
     }
 
@@ -45,6 +50,29 @@ public class BundleHelper {
 
     private static String getMessageText(Bundle data) {
         return data.getString(EXTRA_MESSAGE);
+    }
+
+    private static void setAttachments(Bundle data, Message message) {
+        final String text = getMessageText(data);
+        final Pair<String, List<String>> extract = AttachmentHelper.extractMediaUrls(text);
+        final List<String> urls = extract.second;
+
+        if (urls != null && !urls.isEmpty()) {
+            final List<Attachment> attachments = new ArrayList<>();
+
+            for (String url : urls) {
+                final String ext = AttachmentHelper.getUrlFileExtension(url);
+
+                if (AttachmentHelper.isImageUrl(url)) {
+                    attachments.add(new Attachment().setContentType("image/" + ext).setUrl(url));
+                }
+                else if (AttachmentHelper.isVideoUrl(url)) {
+                    attachments.add(new Attachment().setContentType("video/" + ext).setUrl(url));
+                }
+            }
+            message.setAttachments(attachments);
+        }
+        message.setText(extract.first);
     }
 
     private static MessageMetadata getMessageMetadata(Bundle data) {

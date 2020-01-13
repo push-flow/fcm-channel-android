@@ -21,14 +21,24 @@
             android:background="@drawable/fcm_client_bubble_other"
             android:orientation="vertical">
 
+            <ImageView
+                android:id="@+id/chatMessageImage"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_margin="4dp"
+                android:importantForAccessibility="no"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/chatMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:gravity="start"
-                android:padding="4dp"
+                android:autoLink="web"
                 android:lineSpacingExtra="4dp"
+                android:padding="4dp"
                 android:textAlignment="viewStart"
                 tools:text="Mensagem do chat, testando, testando Mensagem do chat, testando, testando Mensagem do chat, testando, testando Mensagem do chat, testando, testando"
                 tools:textColor="@android:color/white" />
