@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 public abstract class AttachmentHelper {
 
+    public static final String URI_VIDEO_THUMBNAIL = "https://i.imgur.com/y5Oth3E.png";
+
     private static final String REGEX_IMAGE = "(http|https)://.*\\.(jpg|jpeg|png|gif|tif|tiff|bmp)";
     private static final String REGEX_VIDEO = "(http|https)://.*\\.(mp4|mkv|wmv|avi|flv)";
 

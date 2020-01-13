@@ -1,7 +1,5 @@
 package io.fcmchannel.sdk.chat;
 
-import android.content.ContentProvider;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -25,7 +23,6 @@ import com.squareup.picasso.Picasso;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import br.com.ilhasoft.support.media.view.MediaModel;
 import br.com.ilhasoft.support.media.view.MediaViewOptions;
@@ -41,7 +38,6 @@ import io.fcmchannel.sdk.core.models.Message;
 import io.fcmchannel.sdk.ui.ChatUiConfiguration;
 import io.fcmchannel.sdk.util.AttachmentHelper;
 import io.fcmchannel.sdk.util.SpaceItemDecoration;
-import io.mattcarroll.hover.Content;
 
 import static io.fcmchannel.sdk.ui.UiConfiguration.INVALID_VALUE;
 
@@ -221,8 +217,7 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
                 attachmentMedias.add(new ImageMedia(url));
             }
             else if (AttachmentHelper.isVideoUrl(url)) {
-                final String thumbnailUri = "https://i.imgur.com/y5Oth3E.png"; // black background
-                attachmentMedias.add(new VideoMedia(url, thumbnailUri));
+                attachmentMedias.add(new VideoMedia(url, AttachmentHelper.URI_VIDEO_THUMBNAIL));
             }
             textBuilder.append("\n").append(url);
         }
