@@ -22,25 +22,47 @@ public interface RapidProApi {
 
     @FormUrlEncoded
     @POST("c/fcm/{channel}/register")
-    Call<FcmRegistrationResponse> registerFcmContact(@Path("channel") String channel,
-                                                     @Field("urn") String urn,
-                                                     @Field("fcm_token") String fcmToken,
-                                                     @Field("contact_uuid") String contactUuid);
+    Call<FcmRegistrationResponse> registerFcmContact(
+            @Path("channel") String channel,
+            @Field("urn") String urn,
+            @Field("fcm_token") String fcmToken,
+            @Field("contact_uuid") String contactUuid
+    );
 
     @FormUrlEncoded
     @POST("c/fcm/{channel}/receive")
-    Call<ResponseBody> sendReceivedMessage(@Path("channel") String channel,
-                                           @Field("from") String from,
-                                           @Field("fcm_token") String fcmToken,
-                                           @Field("msg") String msg);
+    Call<ResponseBody> sendReceivedMessage(
+            @Path("channel") String channel,
+            @Field("from") String from,
+            @Field("fcm_token") String fcmToken,
+            @Field("msg") String msg
+    );
 
     @GET("api/v2/messages.json")
-    Call<ApiResponse<Message>> listMessages(@Header("Authorization") String token, @Query("contact") String contactUuid);
+    Call<ApiResponse<Message>> listMessages(
+            @Header("Authorization") String token,
+            @Query("contact") String contactUuid
+    );
+
+    @GET("api/v2/messages.json")
+    Call<ApiResponse<Message>> listMessages(
+            @Header("Authorization") String token,
+            @Query("contact") String contactUuid,
+            @Query("cursor") String cursor,
+            @Query("count") int count
+    );
 
     @GET("api/v2/contacts.json")
-    Call<ApiResponse<Contact>> loadContact(@Header("Authorization") String token, @Query("urn") String urn);
+    Call<ApiResponse<Contact>> loadContact(
+            @Header("Authorization") String token,
+            @Query("urn") String urn
+    );
 
     @POST("api/v2/contacts.json")
-    Call<Contact> saveContact(@Header("Authorization") String token,
-                                @Query("uuid") String contactUuid, @Body Contact contact);
+    Call<Contact> saveContact(
+            @Header("Authorization") String token,
+            @Query("uuid") String contactUuid,
+            @Body Contact contact
+    );
+
 }
