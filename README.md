@@ -25,6 +25,14 @@ Step 2: Add the dependency and GMS plugin to your app build.gradle
 
   apply plugin: 'com.google.gms.google-services'
 ```
+
+Step 3: Register media view activity due to messages with media attachments, exactly that way:
+```
+  <activity
+    android:name="br.com.ilhasoft.support.media.view.MediaViewActivity"
+    android:theme="@style/Theme.AppCompat.NoActionBar" />
+```
+
 Latest Version: [![](https://jitpack.io/v/push-flow/fcm-channel-android.svg?style=flat-square)](https://jitpack.io/#push-flow/fcm-channel-android)
 
 ## Features:

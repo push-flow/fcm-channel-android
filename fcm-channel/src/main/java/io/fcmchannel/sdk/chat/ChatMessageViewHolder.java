@@ -1,6 +1,9 @@
 package io.fcmchannel.sdk.chat;
 
+import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -20,8 +23,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
+import br.com.ilhasoft.support.media.view.MediaModel;
+import br.com.ilhasoft.support.media.view.MediaViewOptions;
+import br.com.ilhasoft.support.media.view.models.ImageMedia;
+import br.com.ilhasoft.support.media.view.models.VideoMedia;
 import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.R;
 import io.fcmchannel.sdk.chat.metadata.OnMetadataItemClickListener;
@@ -32,6 +41,7 @@ import io.fcmchannel.sdk.core.models.Message;
 import io.fcmchannel.sdk.ui.ChatUiConfiguration;
 import io.fcmchannel.sdk.util.AttachmentHelper;
 import io.fcmchannel.sdk.util.SpaceItemDecoration;
+import io.mattcarroll.hover.Content;
 
 import static io.fcmchannel.sdk.ui.UiConfiguration.INVALID_VALUE;
 
@@ -198,22 +208,50 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
             return;
         }
         final StringBuilder textBuilder = new StringBuilder(chatMessage.getText());
+        final ArrayList<MediaModel> attachmentMedias = new ArrayList<>();
         Attachment firstImageAttachment = null;
 
         for (Attachment attachment : attachments) {
-            if (firstImageAttachment == null && AttachmentHelper.isImageUrl(attachment.getUrl())) {
-                firstImageAttachment = attachment;
-            } else {
-                textBuilder.append("\n").append(attachment.getUrl());
+            final String url = attachment.getUrl();
+
+            if (AttachmentHelper.isImageUrl(url)) {
+                if (firstImageAttachment == null) {
+                    firstImageAttachment = attachment;
+                }
+                attachmentMedias.add(new ImageMedia(url));
             }
+            else if (AttachmentHelper.isVideoUrl(url)) {
+                final String thumbnailUri = "https://i.imgur.com/y5Oth3E.png"; // black background
+                attachmentMedias.add(new VideoMedia(url, thumbnailUri));
+            }
+            textBuilder.append("\n").append(url);
         }
         if (firstImageAttachment != null) {
             image.setVisibility(View.VISIBLE);
-            Picasso.get()
+            setOnImageAttachmentClickListener(image, attachmentMedias);
+            Picasso.with(image.getContext())
                 .load(firstImageAttachment.getUrl())
                 .into(image);
         }
-        message.setText(textBuilder.toString());
+        message.setText(textBuilder.toString().replaceAll("\n", "\n\n"));
+    }
+
+    private void setOnImageAttachmentClickListener(
+        final ImageView image,
+        final ArrayList<MediaModel> medias
+    ) {
+        image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Context context = image.getContext();
+                final Intent intent = new MediaViewOptions(medias)
+                    .setTitleEnabled(false)
+                    .setToolbarColorRes(android.R.color.transparent)
+                    .createIntent(context);
+
+                context.startActivity(intent);
+            }
+        });
     }
 
     private void setupBubblePosition(boolean incoming, FrameLayout.LayoutParams params) {

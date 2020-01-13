@@ -51,15 +51,21 @@ public class BundleHelper {
 
     private static List<Attachment> getAttachments(Bundle data) {
         final String text = getMessageText(data);
-        final String imageUrl = AttachmentHelper.firstImageUrl(text);
+        final List<String> urls = AttachmentHelper.extractMediaUrls(text);
 
-        if (!imageUrl.isEmpty()) {
-            final Attachment attachment = new Attachment()
-                .setContentType("image/" + AttachmentHelper.getFileExtension(imageUrl))
-                .setUrl(imageUrl);
+        if (!urls.isEmpty()) {
             final List<Attachment> attachments = new ArrayList<>();
 
-            attachments.add(attachment);
+            for (String url : urls) {
+                final String ext = AttachmentHelper.getUrlFileExtension(url);
+
+                if (AttachmentHelper.isImageUrl(url)) {
+                    attachments.add(new Attachment().setContentType("image/" + ext).setUrl(url));
+                }
+                else if (AttachmentHelper.isVideoUrl(url)) {
+                    attachments.add(new Attachment().setContentType("video/" + ext).setUrl(url));
+                }
+            }
             return attachments;
         }
         return null;
