@@ -21,7 +21,6 @@ public class BundleHelper {
     private static final String EXTRA_MESSAGE_ID = "message_id";
     private static final String EXTRA_MESSAGE = "message";
     private static final String EXTRA_METADATA = "metadata";
-    private static final String EXTRA_ATTACHMENTS = "attachments";
     private static final String EXTRA_QUICK_REPLIES = "quick_replies";
 
     public static Message getMessage(Bundle data) {
