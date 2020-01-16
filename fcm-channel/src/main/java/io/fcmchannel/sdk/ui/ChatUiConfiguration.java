@@ -28,6 +28,7 @@ public class ChatUiConfiguration {
 
     private boolean sentMessageInTopDirection = false;
     private boolean receivedMessageInTopDirection = false;
+    private boolean showMediaLink = false;
 
     @ColorInt
     private int sentMessageHourTextColor = INVALID_VALUE;
@@ -123,6 +124,15 @@ public class ChatUiConfiguration {
 
     public ChatUiConfiguration setReceivedMessageIcon(@DrawableRes int receivedMessageIcon) {
         this.receivedMessageIcon = receivedMessageIcon;
+        return this;
+    }
+
+    public boolean isShowMediaLink() {
+        return showMediaLink;
+    }
+
+    public ChatUiConfiguration setShowMediaLink(boolean showMediaLink) {
+        this.showMediaLink = showMediaLink;
         return this;
     }
 
