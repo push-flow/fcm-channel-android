@@ -219,7 +219,10 @@ class ChatMessageViewHolder extends RecyclerView.ViewHolder {
             else if (AttachmentHelper.isVideoUrl(url)) {
                 attachmentMedias.add(new VideoMedia(url, AttachmentHelper.URI_VIDEO_THUMBNAIL));
             }
-            textBuilder.append("\n").append(url);
+
+            if (chatUiConfiguration.isShowMediaLink()) {
+                textBuilder.append("\n").append(url);
+            }
         }
         if (firstImageAttachment != null) {
             image.setVisibility(View.VISIBLE);
