@@ -119,8 +119,10 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
 
         message = view.findViewById(R.id.message);
         adapter = new ChatMessagesAdapter(chatUiConfiguration, onMetadataItemClickListener);
-        adapter.showLoading();
 
+        if (!FcmClient.isSafeModeEnabled()) {
+            adapter.showLoading();
+        }
         if (chatUiConfiguration.messagesPagingEnabled()) {
             adapter.setOnDemandListener(onDemandListener);
         }

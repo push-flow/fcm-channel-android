@@ -13,7 +13,10 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import java.util.Collections;
+import java.util.UUID;
 
 import io.fcmchannel.sdk.chat.FcmClientChatActivity;
 import io.fcmchannel.sdk.chat.FcmClientChatFragment;
@@ -45,6 +48,7 @@ public class FcmClient {
     private static Boolean forceRegistration = false;
     private static Class<? extends FcmClientRegistrationIntentService> registrationServiceClass;
     private static UiConfiguration uiConfiguration;
+    private static boolean safeModeEnabled = false;
 
     private static Preferences preferences;
     private static RestServices services;
@@ -54,33 +58,47 @@ public class FcmClient {
     FcmClient() {}
 
     public static void initialize(Builder builder) {
-        initialize(builder.context, builder.host, builder.token,
-                builder.channel, builder.registrationServiceClass, builder.uiConfiguration);
+        initialize(
+            builder.context,
+            builder.host,
+            builder.token,
+            builder.channel,
+            builder.registrationServiceClass,
+            builder.uiConfiguration,
+            builder.safeModeEnabled
+        );
     }
 
-    private static void initialize(Context context, String host, String token, String channel
-            , Class<? extends FcmClientRegistrationIntentService> registrationServiceClass, UiConfiguration uiConfiguration) {
+    private static void initialize(
+        Context context,
+        String host,
+        String token,
+        String channel,
+        Class<? extends FcmClientRegistrationIntentService> registrationServiceClass,
+        UiConfiguration uiConfiguration,
+        boolean safeModeEnabled
+    ) {
         if (context == null) {
-            throw new IllegalArgumentException("It's not possible to initilize FcmClient without a context");
+            throw new IllegalArgumentException("It's not possible to initialize FcmClient without a context");
         }
-
+        if (safeModeEnabled && token != null) {
+            throw new IllegalArgumentException("Token must be null on safe mode");
+        }
         FcmClient.context = context;
         FcmClient.host = host;
         FcmClient.token = token;
         FcmClient.channel = channel;
         FcmClient.registrationServiceClass = registrationServiceClass;
         FcmClient.preferences = new Preferences(context);
-        if (!TextUtils.isEmpty(host) && !TextUtils.isEmpty(getToken())) {
+        FcmClient.uiConfiguration = uiConfiguration;
+        FcmClient.safeModeEnabled = safeModeEnabled;
+
+        if (!TextUtils.isEmpty(host)) {
             FcmClient.services = new RestServices(host, getToken());
         }
-        FcmClient.uiConfiguration = uiConfiguration;
         FcmClient.getPreferences()
                 .setFloatingChatEnabled(uiConfiguration.isFloatingChatEnabled())
                 .commit();
-    }
-
-    public static UiConfiguration getUiConfiguration() {
-        return uiConfiguration;
     }
 
     public static void startFcmClientChatActivity(Context context) {
@@ -110,7 +128,7 @@ public class FcmClient {
     }
 
     public static void sendMessage(String message) {
-        services.sendReceivedMessage(channel, getPreferences().getUrn(), getPreferences().getFcmToken(), message)
+        services.sendReceivedMessage(channel, getPreferences().getUrn(), FcmClient.getFcmToken(), message)
                 .enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {}
@@ -120,7 +138,7 @@ public class FcmClient {
     }
 
     public static void sendMessage(String message, final SendMessageListener listener) {
-        services.sendReceivedMessage(channel, getPreferences().getUrn(), getPreferences().getFcmToken(), message)
+        services.sendReceivedMessage(channel, getPreferences().getUrn(), FcmClient.getFcmToken(), message)
                 .enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -177,6 +195,11 @@ public class FcmClient {
         }
     }
 
+    public static void registerContact() {
+        String urn = UUID.randomUUID().toString();
+        registerContact(urn, null);
+    }
+
     public static void registerContact(String urn) {
         registerContact(urn, null);
     }
@@ -194,8 +217,7 @@ public class FcmClient {
     }
 
     public static boolean isContactRegistered() {
-        return !TextUtils.isEmpty(getPreferences().getFcmToken())
-            && !TextUtils.isEmpty(getPreferences().getContactUuid());
+        return !TextUtils.isEmpty(getPreferences().getUrn());
     }
 
     public static RestServices getServices() {
@@ -252,6 +274,10 @@ public class FcmClient {
             || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.canDrawOverlays(context));
     }
 
+    public static String getFcmToken() {
+        return FirebaseInstanceId.getInstance().getToken();
+    }
+
     public static Context getContext() {
         return context;
     }
@@ -268,15 +294,23 @@ public class FcmClient {
         return host;
     }
 
+    public static UiConfiguration getUiConfiguration() {
+        return uiConfiguration;
+    }
+
+    public static boolean isSafeModeEnabled() {
+        return safeModeEnabled;
+    }
+
     public static class Builder {
 
         private Context context;
         private String token;
         private String host;
         private String channel;
-        private Class<? extends FcmClientRegistrationIntentService>
-                registrationServiceClass = FcmClientRegistrationIntentService.class;
+        private Class<? extends FcmClientRegistrationIntentService> registrationServiceClass = FcmClientRegistrationIntentService.class;
         private UiConfiguration uiConfiguration;
+        private boolean safeModeEnabled;
 
         public Builder(Context context) {
             this.context = context;
@@ -311,6 +345,15 @@ public class FcmClient {
 
         public Builder setUiConfiguration(UiConfiguration uiConfiguration) {
             this.uiConfiguration = uiConfiguration;
+            return this;
+        }
+
+        public boolean isSafeModeEnabled() {
+            return safeModeEnabled;
+        }
+
+        public Builder setSafeModeEnabled(boolean enabled) {
+            this.safeModeEnabled = enabled;
             return this;
         }
     }
