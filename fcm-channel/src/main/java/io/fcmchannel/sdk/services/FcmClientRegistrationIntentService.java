@@ -38,22 +38,22 @@ public class FcmClientRegistrationIntentService extends IntentService {
         try {
             String urn = intent.getStringExtra(EXTRA_URN);
             String contactUuid = intent.getStringExtra(EXTRA_CONTACT_UUID);
-
-            String fcmToken = FirebaseInstanceId.getInstance().getToken();
+            String fcmToken = FcmClient.getFcmToken();
 
             Preferences preferences = FcmClient.getPreferences();
             Contact contact = null;
 
-            if (!TextUtils.isEmpty(FcmClient.getToken())) {
-                Response<FcmRegistrationResponse> response = saveContactWithToken(urn, fcmToken, contactUuid);
+            Response<FcmRegistrationResponse> response = saveContactWithToken(urn, fcmToken, contactUuid);
+
+            if (response.isSuccessful()) {
+                contact = new Contact();
                 FcmRegistrationResponse fcmRegistrationResponse = response.body();
 
-                preferences.setContactUuid(fcmRegistrationResponse.getContactUuid());
-                preferences.setFcmToken(fcmToken);
+                if (!FcmClient.isSafeModeEnabled()) {
+                    preferences.setContactUuid(fcmRegistrationResponse.getContactUuid());
+                    contact.setUuid(fcmRegistrationResponse.getContactUuid());
+                }
                 preferences.setUrn(urn);
-
-                contact = new Contact();
-                contact.setUuid(fcmRegistrationResponse.getContactUuid());
                 contact.setUrns(Collections.singletonList(FcmClient.URN_PREFIX_FCM + urn));
             }
 
@@ -69,8 +69,11 @@ public class FcmClientRegistrationIntentService extends IntentService {
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
 
-    private Response<FcmRegistrationResponse> saveContactWithToken(String urn, String fcmToken,
-                                                                   String contactUuid) throws java.io.IOException {
+    private Response<FcmRegistrationResponse> saveContactWithToken(
+        String urn,
+        String fcmToken,
+        String contactUuid
+    ) throws java.io.IOException {
         RestServices restServices = new RestServices(FcmClient.getHost(), FcmClient.getToken());
         return restServices.registerFcmContact(FcmClient.getChannel(), urn, fcmToken, contactUuid).execute();
     }

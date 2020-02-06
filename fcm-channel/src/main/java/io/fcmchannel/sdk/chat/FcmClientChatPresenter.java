@@ -48,6 +48,9 @@ class FcmClientChatPresenter {
     }
 
     void loadMessages() {
+        if (FcmClient.isSafeModeEnabled()) {
+            return;
+        }
         if (FcmClient.isContactRegistered()) {
             String contactUuid = FcmClient.getContact().getUuid();
             if (!TextUtils.isEmpty(contactUuid)) {
@@ -59,7 +62,7 @@ class FcmClientChatPresenter {
     }
 
     void loadMessagesPaginated() {
-        if (isLoadingMessages || allMessagesWereLoaded) return;
+        if (FcmClient.isSafeModeEnabled() || isLoadingMessages || allMessagesWereLoaded) return;
 
         if (FcmClient.isContactRegistered()) {
             String contactUuid = FcmClient.getContact().getUuid();
@@ -72,6 +75,9 @@ class FcmClientChatPresenter {
     }
 
     private void loadContact(final boolean pagedLoading) {
+        if (FcmClient.isSafeModeEnabled()) {
+            return;
+        }
         view.showLoading();
 
         String urn = FcmClient.URN_PREFIX_FCM + FcmClient.getPreferences().getUrn();

@@ -3,12 +3,11 @@ package io.fcmchannel.sdk.persistence;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,7 +18,6 @@ public class Preferences {
 
     private static final String KEY_FLOATING_CHAT_ENABLED = "floatingChatEnabled";
     private static final String KEY_URN = "urn";
-    private static final String KEY_FCM_TOKEN = "fcmToken";
     private static final String KEY_CONTACT_UUID = "contactUuid";
     private static final String KEY_UNREAD_MESSAGES = "unreadMessages";
     private static final String KEY_QUICK_REPLIES = "quickReplies";
@@ -64,11 +62,6 @@ public class Preferences {
         return sharedPreferences.getString(getKey(KEY_URN), null);
     }
 
-    public Preferences setFcmToken(String fcmToken) {
-        this.objects.put(getKey(KEY_FCM_TOKEN), fcmToken);
-        return this;
-    }
-
     public int getUnreadMessages() {
         return Integer.valueOf(sharedPreferences.getString(getKey(KEY_UNREAD_MESSAGES), "0"));
     }
@@ -86,14 +79,9 @@ public class Preferences {
         sharedPreferences.edit().putStringSet(getKey(KEY_QUICK_REPLIES), quickReplies).apply();
     }
 
-    public String getFcmToken() {
-        return sharedPreferences.getString(getKey(KEY_FCM_TOKEN), null);
-    }
-
     public void clear() {
         setContactUuid("");
         setUrn("");
-        setFcmToken("");
         setUnreadMessages(0);
         commit();
     }
