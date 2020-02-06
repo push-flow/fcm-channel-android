@@ -8,7 +8,7 @@ FCM Channel Android is a client library for [Push](http://push.al) platform that
 
 Step 1: Add it in your root build.gradle at the end of repositories:
 
-```
+```groovy
 allprojects {
   repositories {
     ...
@@ -18,7 +18,7 @@ allprojects {
 ```
 
 Step 2: Add the dependency and GMS plugin to your app build.gradle
-```
+```groovy
   dependencies {
     implementation 'com.github.push-flow.fcm-channel-android:fcm-channel:LATEST-VERSION'
   }
@@ -27,8 +27,8 @@ Step 2: Add the dependency and GMS plugin to your app build.gradle
 ```
 
 Step 3: Register activities in your manifest file
-```
-  <application ...>
+```xml
+<application ...>
   ...
   <!-- If you will use library activity -->
   <activity android:name="io.fcmchannel.sdk.chat.FcmClientChatActivity" />
@@ -38,12 +38,12 @@ Step 3: Register activities in your manifest file
     android:name="br.com.ilhasoft.support.media.view.MediaViewActivity"
     android:theme="@style/Theme.AppCompat.NoActionBar" />
   ...
-  </application>
+</application>
 ```
 
 Step 4: Setup the client
 
-```
+```java
 // chat UI customization
 ChatUiConfiguration chatUiConfiguration = new ChatUiConfiguration()
   // chat background
@@ -118,29 +118,29 @@ FcmClient.initialize(builder);
 
 Step 5: Register services in your manifest
 
-```
-  <application ...>
-    ...
-    <!-- The FcmClientRegistrationIntentService or a child of it to contact register -->
-    <service
-      android:name="io.fcmchannel.sdk.services.FcmClientRegistrationIntentService"
-      android:exported="false" />
+```xml
+<application ...>
+  ...
+  <!-- The FcmClientRegistrationIntentService or a child of it to contact register -->
+  <service
+    android:name="io.fcmchannel.sdk.services.FcmClientRegistrationIntentService"
+    android:exported="false" />
 
-    <!-- The FcmClientIntentService or a child of it to receive messages, with a child we can change notification icon, for example -->
-    <service
-      android:name="io.fcmchannel.sdk.services.FcmClientIntentService"
-      android:exported="false">
-      <intent-filter>
-        <action android:name="com.google.firebase.MESSAGING_EVENT" />
-      </intent-filter>
-    </service>
+  <!-- The FcmClientIntentService or a child of it to receive messages, with a child we can change notification icon, for example -->
+  <service
+    android:name="io.fcmchannel.sdk.services.FcmClientIntentService"
+    android:exported="false">
+    <intent-filter>
+    <action android:name="com.google.firebase.MESSAGING_EVENT" />
+    </intent-filter>
+  </service>
 
-    <!-- To floating chat, if is enabled -->
-    <service
-      android:name="io.fcmchannel.sdk.chat.menu.FcmClientMenuService"
-      android:exported="false" />
-    ...
-  </application>
+  <!-- To floating chat, if is enabled -->
+  <service
+    android:name="io.fcmchannel.sdk.chat.menu.FcmClientMenuService"
+    android:exported="false" />
+  ...
+</application>
 ```
 
 Latest Version: [![](https://jitpack.io/v/push-flow/fcm-channel-android.svg?style=flat-square)](https://jitpack.io/#push-flow/fcm-channel-android)
