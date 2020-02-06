@@ -82,7 +82,7 @@ public class FcmClient {
             throw new IllegalArgumentException("It's not possible to initialize FcmClient without a context");
         }
         if (safeModeEnabled && token != null) {
-            throw new IllegalArgumentException("Token must be null on safe mode");
+            throw new IllegalArgumentException("Token must not be set on safe mode");
         }
         FcmClient.context = context;
         FcmClient.host = host;
@@ -128,7 +128,7 @@ public class FcmClient {
     }
 
     public static void sendMessage(String message) {
-        services.sendReceivedMessage(channel, getPreferences().getUrn(), FcmClient.getFcmToken(), message)
+        services.sendReceivedMessage(channel, getPreferences().getUrn(), getFcmToken(), message)
                 .enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {}
@@ -138,7 +138,7 @@ public class FcmClient {
     }
 
     public static void sendMessage(String message, final SendMessageListener listener) {
-        services.sendReceivedMessage(channel, getPreferences().getUrn(), FcmClient.getFcmToken(), message)
+        services.sendReceivedMessage(channel, getPreferences().getUrn(), getFcmToken(), message)
                 .enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -193,11 +193,6 @@ public class FcmClient {
         if (!isContactRegistered()) {
             registerContact(urn);
         }
-    }
-
-    public static void registerContact() {
-        String urn = UUID.randomUUID().toString();
-        registerContact(urn, null);
     }
 
     public static void registerContact(String urn) {
