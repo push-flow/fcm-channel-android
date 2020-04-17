@@ -8,22 +8,29 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.Settings;
-import androidx.annotation.CallSuper;
-import androidx.core.app.NotificationCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.text.Html;
 import android.text.TextUtils;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import io.fcmchannel.sdk.FcmClient;
 import io.fcmchannel.sdk.R;
 import io.fcmchannel.sdk.chat.FcmClientChatActivity;
 import io.fcmchannel.sdk.chat.menu.FcmClientMenuService;
+import io.fcmchannel.sdk.core.models.Message;
 import io.fcmchannel.sdk.persistence.Preferences;
 import io.fcmchannel.sdk.util.BundleHelper;
 
@@ -31,6 +38,8 @@ import io.fcmchannel.sdk.util.BundleHelper;
  * Created by john-mac on 6/29/16.
  */
 public class FcmClientIntentService extends FirebaseMessagingService {
+
+    private static List<Message> messagesCache;
 
     public static final String ACTION_MESSAGE_RECEIVED = "io.fcmchannel.sdk.MESSAGE_RECEIVED";
     private static final String CUSTOM_TYPE = "rapidpro";
@@ -59,7 +68,12 @@ public class FcmClientIntentService extends FirebaseMessagingService {
 
         if (isRapidproType(type) && FcmClient.isContactRegistered()) {
             Intent pushReceiveIntent = new Intent(ACTION_MESSAGE_RECEIVED);
-            pushReceiveIntent.putExtra(KEY_DATA, BundleHelper.convertToBundleFrom(data));
+            Bundle bundle = BundleHelper.convertToBundleFrom(data);
+            pushReceiveIntent.putExtra(KEY_DATA, bundle);
+
+            Message message = BundleHelper.getMessage(bundle);
+            message.setCreatedOn(new Date());
+            addMessageToCache(message);
 
             if (!FcmClient.isChatVisible()) {
                 int unreadMessages = increaseUnreadMessages();
@@ -70,6 +84,20 @@ public class FcmClientIntentService extends FirebaseMessagingService {
             }
             LocalBroadcastManager.getInstance(this).sendBroadcast(pushReceiveIntent);
         }
+    }
+
+    public static List<Message> getMessagesCache() {
+        if (messagesCache == null) {
+            messagesCache = new ArrayList<>();
+        }
+        return messagesCache;
+    }
+
+    public static void addMessageToCache(Message message) {
+        if (messagesCache == null) {
+            messagesCache = new ArrayList<>();
+        }
+        messagesCache.add(message);
     }
 
     private void showFloatingMenu(int unreadMessages) {
