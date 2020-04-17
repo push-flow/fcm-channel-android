@@ -87,13 +87,7 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
     }
 
     private void loadMessages() {
-        List<Message> cache = FcmClientIntentService.getMessagesCache();
-
-        if (!cache.isEmpty()) {
-            List<Message> copy = new ArrayList<>(cache);
-            Collections.reverse(copy);
-            adapter.addMessages(copy);
-        } else if (chatUiConfiguration.messagesPagingEnabled()) {
+        if (chatUiConfiguration.messagesPagingEnabled()) {
             presenter.loadMessagesPaginated();
         } else {
             presenter.loadMessages();
@@ -120,6 +114,21 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
     public void onResume() {
         super.onResume();
         visible = true;
+        checkCache();
+    }
+
+    private void checkCache() {
+        if (!FcmClient.isSafeModeEnabled()) {
+            return;
+        }
+        List<Message> cache = FcmClientIntentService.getMessagesCache();
+
+        if (!cache.isEmpty() && cache.size() > adapter.getItemCount()) {
+            adapter.clear();
+            List<Message> copy = new ArrayList<>(cache);
+            Collections.reverse(copy);
+            adapter.addMessages(copy);
+        }
     }
 
     private void setupView(View view) {

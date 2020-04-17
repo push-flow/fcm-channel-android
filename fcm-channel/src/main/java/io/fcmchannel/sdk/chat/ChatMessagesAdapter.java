@@ -126,6 +126,11 @@ class ChatMessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
+    public void clear() {
+        chatMessages.clear();
+        notifyDataSetChanged();
+    }
+
     public void setOnDemandListener(OnDemandListener onDemandListener) {
         this.onDemandListener = onDemandListener;
     }
