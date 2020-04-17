@@ -26,6 +26,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.fcmchannel.sdk.FcmClient;
@@ -43,6 +45,8 @@ import static io.fcmchannel.sdk.ui.UiConfiguration.INVALID_VALUE;
  * Created by john-mac on 8/30/16.
  */
 public class FcmClientChatFragment extends Fragment implements FcmClientChatView {
+
+    private static List<Message> messagesCache;
 
     private ChatUiConfiguration chatUiConfiguration;
     private EditText message;
@@ -74,11 +78,23 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
                 ? new FcmClientChatPresenter(this, chatUiConfiguration.getMessagesPageSize())
                 : new FcmClientChatPresenter(this);
 
+        if (FcmClient.isSafeModeEnabled() && messagesCache == null) {
+            messagesCache = new ArrayList<>();
+            String initialPayload = chatUiConfiguration.getInitialPayload();
+
+            if (initialPayload != null && !initialPayload.trim().isEmpty()) {
+                FcmClient.sendMessage(initialPayload);
+            }
+        }
         if (FcmClient.isContactRegistered()) loadMessages();
     }
 
     private void loadMessages() {
-        if (chatUiConfiguration.messagesPagingEnabled()) {
+        if (messagesCache != null && !messagesCache.isEmpty()) {
+            List<Message> copy = new ArrayList<>(messagesCache);
+            Collections.reverse(copy);
+            adapter.addMessages(copy);
+        } else if (chatUiConfiguration.messagesPagingEnabled()) {
             presenter.loadMessagesPaginated();
         } else {
             presenter.loadMessages();
@@ -203,12 +219,20 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
     @Override
     public void onMessagesLoaded(List<Message> messages) {
         adapter.addMessages(messages);
+
+        if (messagesCache != null) {
+            messagesCache.addAll(messages);
+        }
     }
 
     @Override
     public void onMessageLoaded(Message message) {
         adapter.addChatMessage(message);
         onLastMessageChanged();
+
+        if (messagesCache != null) {
+            messagesCache.add(message);
+        }
     }
 
     @Override
@@ -255,8 +279,13 @@ public class FcmClientChatFragment extends Fragment implements FcmClientChatView
     public void addNewMessage(String messageText) {
         restoreView();
 
-        adapter.addChatMessage(presenter.createChatMessage(messageText));
+        Message message = presenter.createChatMessage(messageText);
+        adapter.addChatMessage(message);
         messageList.scrollToPosition(0);
+
+        if (messagesCache != null) {
+            messagesCache.add(message);
+        }
     }
 
     private void onLastMessageChanged() {

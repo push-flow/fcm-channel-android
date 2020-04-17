@@ -47,6 +47,8 @@ public class ChatUiConfiguration {
     @ColorInt
     private int messagesLoadingColor = INVALID_VALUE;
 
+    private String initialPayload;
+
     @DrawableRes
     public int getSentMessageBackground() {
         return sentMessageBackground;
@@ -237,4 +239,12 @@ public class ChatUiConfiguration {
         return this;
     }
 
+    public String getInitialPayload() {
+        return initialPayload;
+    }
+
+    public ChatUiConfiguration setInitialPayload(String initialPayload) {
+        this.initialPayload = initialPayload;
+        return this;
+    }
 }
