@@ -78,6 +78,8 @@ ChatUiConfiguration chatUiConfiguration = new ChatUiConfiguration()
   .setMetadataBackgroundColor(colorInt);
   // background of quick replies
   .setMetadataBackground(drawableRes);
+  // initial message to be sent when chat is empty
+  .setInitialPayload(string);
 
 UiConfiguration uiConfiguration = new UiConfiguration()
   // theme of FcmClient activity
